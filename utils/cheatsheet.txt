@@ -1,0 +1,5 @@
+To run program:
+go run -x -ldflags "-extldflags '-lshell32 -lole32 -limm32 -lwinmm -liprop -lsetupapi'"  main.go
+
+To build program on Windows:
+go build -ldflags -H=windowsgui "-extldflags '-lshell32 -lole32 -limm32 -lwinmm -liprop -lsetupapi'"
