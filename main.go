@@ -67,11 +67,13 @@ func testSelector() []string {
 
 func main() {
 	osc := generator.Oscillator(2048)
+	noize := generator.NoiseOsc(2048)
 	go gui.RunGUI(valToPass)
-	go dsp.RunDSP(dsp.DspConf{BufferSize: 2048}, osc)
+	go dsp.RunDSP(dsp.DspConf{BufferSize: 2048}, osc, noize)
 	for {
 		osc.Osc.Amplitude = *valToPass.Osc1.Vol / 1000
 		osc.Osc.SetFreq(*valToPass.Osc1.Pitch * 10)
+		noize.Osc.Amplitude = *valToPass.Osc1.Noize / 1000
 		//log.Println(*valToPass.Osc1.Vol)
 	}
 }

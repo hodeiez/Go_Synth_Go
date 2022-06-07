@@ -51,6 +51,7 @@ func Oscillator(bufferSize int) Osc {
 		Format: audio.FormatStereo44100,
 	}
 	//***************************
+
 	currentNote := 440.0
 	osc := generator.NewOsc(generator.WaveSine, currentNote, buf.Format.SampleRate)
 	osc.Amplitude = 1

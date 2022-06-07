@@ -13,7 +13,7 @@ type DspConf struct {
 }
 
 //TODO: review and fix the volume and amplitude
-func RunDSP(dspConf DspConf, osc generator.Osc) {
+func RunDSP(dspConf DspConf, osc generator.Osc, noize generator.Noise) {
 
 	portaudio.Initialize()
 	api, _ := portaudio.HostApis()
@@ -28,7 +28,7 @@ func RunDSP(dspConf DspConf, osc generator.Osc) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("dsp running")
+
 	defer stream.Close()
 
 	if err := stream.Start(); err != nil {
@@ -39,6 +39,9 @@ func RunDSP(dspConf DspConf, osc generator.Osc) {
 	for {
 
 		if err := osc.Osc.Fill(osc.Buf); err != nil {
+			log.Printf("error filling up the buffer")
+		}
+		if err := noize.Osc.Fill(noize.Buf); err != nil {
 			log.Printf("error filling up the buffer")
 		}
 		// populate the out buffer
@@ -57,7 +60,7 @@ func RunDSP(dspConf DspConf, osc generator.Osc) {
 
 		// }
 
-		f64ToF32Mixing(out, dspConf, osc)
+		f64ToF32Mixing(out, dspConf, osc, noize)
 		// write to the stream
 		if err := stream.Write(); err != nil {
 			log.Printf("error writing to stream : %v\n", err)
@@ -67,9 +70,10 @@ func RunDSP(dspConf DspConf, osc generator.Osc) {
 
 }
 
-func f64ToF32Mixing(dst []float32, src DspConf, osc generator.Osc) {
+func f64ToF32Mixing(dst []float32, src DspConf, osc generator.Osc, noize generator.Noise) {
 	for i := range osc.Buf.Data {
-		dst[i] = float32(osc.Buf.Data[i])
+
+		dst[i] = float32(osc.Buf.Data[i] + noize.Buf.Data[i])
 	}
 	// for i := range src.VM.Voices[0].Oscillator.Buf.Data {
 	// 	sum := 0.0

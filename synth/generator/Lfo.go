@@ -1,3 +1,3 @@
 package generator
 
-type Adsr struct{}
+type Lfo struct{}
