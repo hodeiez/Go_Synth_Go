@@ -4,7 +4,8 @@ import (
 	gui "hodei/gosynthgo/gui"
 	organism "hodei/gosynthgo/gui/components/organisms"
 	"hodei/gosynthgo/synth/dsp"
-	"log"
+	"hodei/gosynthgo/synth/generator"
+	//"log"
 )
 
 var (
@@ -65,11 +66,12 @@ func testSelector() []string {
 }
 
 func main() {
-	println("hej")
+	osc := generator.Oscillator(2048)
 	go gui.RunGUI(valToPass)
-	go dsp.Run(dsp.DspConf{BufferSize: 2048})
+	go dsp.RunDSP(dsp.DspConf{BufferSize: 2048}, osc)
 	for {
-
-		log.Println(*valToPass.Osc1.Vol)
+		osc.Osc.Amplitude = *valToPass.Osc1.Vol / 1000
+		osc.Osc.SetFreq(*valToPass.Osc1.Pitch * 10)
+		//log.Println(*valToPass.Osc1.Vol)
 	}
 }

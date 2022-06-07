@@ -85,7 +85,7 @@ func (k *KnobWidget) Build() {
 	hovered := g.IsItemHovered()
 
 	if active && g.Context.IO().GetMouseDelta().X != 0 {
-		step := (k.max - k.min) / 200.00
+		step := (k.max - k.min) / 500.00
 		*k.pValue += float64(g.Context.IO().GetMouseDelta().X) * step
 		if *k.pValue < k.min {
 			*k.pValue = k.min
@@ -104,16 +104,11 @@ func (k *KnobWidget) Build() {
 	//canvas.AddText(image.Pt(int(float32(k.pos.X)+innerSpaceX), int(float32(k.pos.Y)+(radiusOut*2)-innerSpaceY)), k.lineColor, k.label)
 	if active || hovered {
 
-		//wnd:=g.SetNextWindowPos(float32(pos.X)-padX, float32(pos.Y)-padY)
-		//g.Tooltip(strconv.FormatFloat(*k.pValue, 'f', 2, 64))
 		wnd := g.SingleWindow()
 		wnd.Size(50, 20)
-		// wndX, wndY := wnd.CurrentSize()
-		// wnd.Pos(float32(k.pos.X)-wndX/3, float32(k.pos.Y)+wndY)
 
 		wnd.Pos(float32(pos.X)-padX, float32(pos.Y)-padY)
 		wnd.Layout(g.Label(strconv.FormatFloat(*k.pValue, 'f', 0, 64)))
-		//wnd.Layout(g.Tooltip("tip").Layout(g.BulletText(strconv.FormatFloat(*k.pValue, 'f', 0, 64))))
 
 	}
 

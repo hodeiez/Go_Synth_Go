@@ -13,7 +13,7 @@ type DspConf struct {
 }
 
 //TODO: review and fix the volume and amplitude
-func Run(dspConf DspConf) {
+func RunDSP(dspConf DspConf, osc generator.Osc) {
 
 	portaudio.Initialize()
 	api, _ := portaudio.HostApis()
@@ -36,9 +36,8 @@ func Run(dspConf DspConf) {
 	}
 	defer stream.Stop()
 
-	osc := generator.Oscillator(dspConf.BufferSize)
-
 	for {
+
 		if err := osc.Osc.Fill(osc.Buf); err != nil {
 			log.Printf("error filling up the buffer")
 		}
