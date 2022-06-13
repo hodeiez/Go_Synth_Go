@@ -69,13 +69,15 @@ func main() {
 	osc := generator.Oscillator(2048)
 	noize := generator.NoiseOsc(2048)
 	filterVal := 0.0
+	resoVal := 0.0
 	go gui.RunGUI(valToPass)
-	go dsp.RunDSP(dsp.DspConf{BufferSize: 2048}, osc, noize, &filterVal)
+	go dsp.RunDSP(dsp.DspConf{BufferSize: 2048}, osc, noize, &filterVal, &resoVal)
 	for {
 		osc.Osc.Amplitude = *valToPass.Osc1.Vol / 1000
 		osc.Osc.SetFreq(*valToPass.Osc1.Pitch * 10)
 		noize.Osc.Amplitude = *valToPass.Osc1.Noize / 1000
 		filterVal = *valToPass.Osc1.Cut
+		resoVal = *valToPass.Osc1.Res
 		//log.Println(*valToPass.Osc1.Vol)
 	}
 }
