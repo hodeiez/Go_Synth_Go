@@ -10,12 +10,13 @@ import (
 
 type Pwm struct {
 }
-type Noise struct {
-	Osc *generator.Osc
-	Buf *audio.FloatBuffer
-}
 
-func NoiseOsc(bufferSize int) Noise {
+// type Noise struct {
+// 	Osc *generator.Osc
+// 	Buf *audio.FloatBuffer
+// }
+
+func NoiseOsc(bufferSize int) Osc {
 
 	buf := &audio.FloatBuffer{
 		Data:   make([]float64, bufferSize),
@@ -27,6 +28,6 @@ func NoiseOsc(bufferSize int) Noise {
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, os.Kill)
 
-	return Noise{osc, buf}
+	return Osc{Osc: osc, Buf: buf}
 
 }
