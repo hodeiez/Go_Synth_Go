@@ -61,7 +61,7 @@ func RunDSP(dspConf DspConf, osc generator.Osc, noize generator.Noise, cutFreq *
 
 		// }
 
-		out = f64ToF32Mixing(out, dspConf, osc, noize, *cutFreq, *resoVal)
+		out = Mixing(out, dspConf, osc, noize, *cutFreq, *resoVal)
 		// write to the stream
 		if err := stream.Write(); err != nil {
 			log.Printf("error writing to stream : %v\n", err)
@@ -71,44 +71,12 @@ func RunDSP(dspConf DspConf, osc generator.Osc, noize generator.Noise, cutFreq *
 
 }
 
-func f64ToF32Mixing(dst []float32, src DspConf, osc generator.Osc, noize generator.Noise, cutFreq float64, resoVal float64) []float32 {
-
-	for i := range osc.Buf.Data {
-
-		dst[i] = float32(osc.Buf.Data[i] + noize.Buf.Data[i])
-		//dst[i] = post_audio.Lowpass(osc.Buf.Data[i]+noize.Buf.Data[i], cutFreq, 0, 44100)
-	}
+func Mixing(dst []float32, src DspConf, osc generator.Osc, noize generator.Noise, cutFreq float64, resoVal float64) []float32 {
+	el := [][]float64{osc.Buf.Data, noize.Buf.Data} //TODO: wrapUp in a struct type??
+	PreMix(dst, el)
 
 	dst = post_audio.Lowpass(dst, cutFreq, 0.0001, 44100)
 	//dst = post_audio.Bandpass(dst, cutFreq, 0.0001, 44100, resoVal)
 	return dst
 
-	// for i := range src.VM.Voices[0].Oscillator.Buf.Data {
-	// 	sum := 0.0
-	// 	for _, el := range src.VM.Voices {
-	// 		sum += el.Oscillator.Buf.Data[i] + el.Oscillator2.Buf.Data[i]
-	// 		dst[i] = float32(sum)
-
-	// 	}
-
-	// }
-
 }
-
-// func f64ToF32Mixing(dst []float32, src DspConf, osc generator.Osc, noize generator.Noise, cutFreq float64, resoVal float64) {
-// 	for i := range osc.Buf.Data {
-
-// 		//dst[i] = float32(osc.Buf.Data[i] + noize.Buf.Data[i])
-// 		dst[i] = post_audio.Lowpass(osc.Buf.Data[i]+noize.Buf.Data[i], cutFreq, 0, 44100)
-// 	}
-// 	// for i := range src.VM.Voices[0].Oscillator.Buf.Data {
-// 	// 	sum := 0.0
-// 	// 	for _, el := range src.VM.Voices {
-// 	// 		sum += el.Oscillator.Buf.Data[i] + el.Oscillator2.Buf.Data[i]
-// 	// 		dst[i] = float32(sum)
-
-// 	// 	}
-
-// 	// }
-
-// }

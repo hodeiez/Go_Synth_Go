@@ -54,7 +54,7 @@ func Oscillator(bufferSize int) Osc {
 
 	currentNote := 440.0
 	osc := generator.NewOsc(generator.WaveSaw, currentNote, buf.Format.SampleRate)
-	osc.Amplitude = 1
+	osc.Amplitude = 0.1
 	osc.Freq = 440.0
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, os.Kill)
