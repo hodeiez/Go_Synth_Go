@@ -5,6 +5,7 @@ import (
 	organism "hodei/gosynthgo/gui/components/organisms"
 	"hodei/gosynthgo/synth/dsp"
 	"hodei/gosynthgo/synth/generator"
+	"hodei/gosynthgo/synth/post_audio"
 	//"log"
 )
 
@@ -70,14 +71,19 @@ func main() {
 	noize := generator.NoiseOsc(2048)
 	filterVal := 0.0
 	resoVal := 0.0
-	go gui.RunGUI(valToPass)
-	go dsp.RunDSP(dsp.DspConf{BufferSize: 2048}, osc, noize, &filterVal, &resoVal)
+
+	voice1 := generator.NewVoice([]*generator.Osc{&osc}, &post_audio.Filter{}, []*generator.Adsr{&generator.Adsr{}}, []*generator.Osc{&noize}, &generator.Lfo{}, oscPanel1)
+
+	go gui.RunGUI(organism.SynthValues{Osc1: &voice1.ControlValues, Osc2: &oscPanel2})
+	go dsp.RunDSP(dsp.DspConf{BufferSize: 2048}, *voice1.Osc[0], *voice1.Noize[0], &filterVal, &resoVal) //TODO: pass as []voice
 	for {
-		osc.Osc.Amplitude = *valToPass.Osc1.Vol / 1000
-		osc.Osc.SetFreq(*valToPass.Osc1.Pitch * 10)
-		noize.Osc.Amplitude = *valToPass.Osc1.Noize / 1000
-		filterVal = *valToPass.Osc1.Cut
-		resoVal = *valToPass.Osc1.Res
-		//log.Println(*valToPass.Osc1.Vol)
+		//TODO:refactor to binding/controller function
+
+		voice1.Osc[0].Osc.Amplitude = *voice1.ControlValues.Vol / 1000
+		voice1.Osc[0].Osc.SetFreq(*voice1.ControlValues.Pitch * 10)
+		voice1.Noize[0].Osc.Amplitude = *voice1.ControlValues.Noize / 1000
+		filterVal = *voice1.ControlValues.Cut
+		resoVal = *voice1.ControlValues.Res
+
 	}
 }
