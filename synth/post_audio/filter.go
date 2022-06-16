@@ -24,16 +24,16 @@ func Highpass(fs []float32, freq float64, delay float32, sr float64) []float32 {
 
 	return output
 }
-func Lowpass(input []float32, freq float64, delay float32, sr float64) []float32 {
+func Lowpass(input []float32, freq float64, delay float32, sr float64, resoVal float64) []float32 {
 	output := make([]float32, len(input))
 	copy(output, input)
-
+	q := float32(resoVal) / 100
 	costh := 2. - math.Cos((tau*freq)/sr)
 	coef := float32(math.Sqrt(costh*costh-1.)) - float32(costh)
 
 	for i, a := range output {
 
-		output[i] = a*(1+coef) - delay*coef
+		output[i] = a*(q)*(1+coef) - delay*coef
 		delay = output[i]
 
 	}
@@ -45,7 +45,7 @@ func Bandpass(input []float32, freq float64, delay float32, sr float64, q float6
 	// 200-300
 	//	q := 20.
 	//return Highpass(input, freq-q, delay, sr) - Lowpass(input, freq, delay, sr)
-	return Lowpass(Highpass(input, freq-q, delay, sr), freq, delay, sr)
+	return Lowpass(Highpass(input, freq-q, delay, sr), freq, delay, sr, 100)
 }
 
 // func Lowpass(input []float64, freq, delay, sr float64) []float64 {

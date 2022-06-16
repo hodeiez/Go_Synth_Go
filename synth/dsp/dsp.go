@@ -63,7 +63,7 @@ func Mixing(dst []float32, src DspConf, oscs []generator.Osc, cutFreq float64, r
 
 	PreMix(dst, oscs)
 
-	dst = post_audio.Lowpass(dst, cutFreq, 0.0001, 44100)
+	dst = post_audio.Lowpass(dst, cutFreq, 0.0001, 44100, resoVal)
 	//dst = post_audio.Bandpass(dst, cutFreq, 0.0001, 44100, resoVal)
 	return dst
 
