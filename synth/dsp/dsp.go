@@ -2,7 +2,7 @@ package dsp
 
 import (
 	"hodei/gosynthgo/synth/generator"
-	"hodei/gosynthgo/synth/post_audio"
+
 	"log"
 
 	"github.com/gordonklaus/portaudio"
@@ -14,7 +14,7 @@ type DspConf struct {
 }
 
 //TODO: review and fix the volume and amplitude
-func RunDSP(dspConf DspConf, osc generator.Osc, noize generator.Osc, cutFreq *float64, resoVal *float64) {
+func RunDSP(dspConf DspConf, voice generator.Voice) {
 
 	portaudio.Initialize()
 	api, _ := portaudio.HostApis()
@@ -36,11 +36,10 @@ func RunDSP(dspConf DspConf, osc generator.Osc, noize generator.Osc, cutFreq *fl
 		log.Fatal(err)
 	}
 	defer stream.Stop()
-	oscs := []generator.Osc{osc, noize}
 	for {
-		fillBuffers(oscs)
+		fillBuffers(voice)
 
-		out = Mixing(out, dspConf, oscs, *cutFreq, *resoVal)
+		out = Mixing(out, dspConf, voice)
 		// write to the stream
 		if err := stream.Write(); err != nil {
 			log.Printf("error writing to stream : %v\n", err)
@@ -49,7 +48,8 @@ func RunDSP(dspConf DspConf, osc generator.Osc, noize generator.Osc, cutFreq *fl
 	}
 
 }
-func fillBuffers(oscs []generator.Osc) {
+func fillBuffers(voice generator.Voice) {
+	oscs := []generator.Osc{*voice.Osc[0], *voice.Noize[0]}
 	for _, o := range oscs {
 		if err := o.Osc.Fill(o.Buf); err != nil {
 			log.Printf("error filling up the buffer")
@@ -59,12 +59,11 @@ func fillBuffers(oscs []generator.Osc) {
 
 }
 
-func Mixing(dst []float32, src DspConf, oscs []generator.Osc, cutFreq float64, resoVal float64) []float32 {
-
+func Mixing(dst []float32, src DspConf, voice generator.Voice) []float32 {
+	oscs := []generator.Osc{*voice.Osc[0], *voice.Noize[0]}
 	PreMix(dst, oscs)
 
-	dst = post_audio.Lowpass(dst, cutFreq, 0.0001, 44100, resoVal)
-	//dst = post_audio.Bandpass(dst, cutFreq, 0.0001, 44100, resoVal)
+	dst = voice.Filter.RunFilter(dst, 0.0001, 44100)
 	return dst
 
 }

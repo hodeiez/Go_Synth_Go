@@ -5,6 +5,8 @@ import (
 )
 
 type Filter struct {
+	Cutoff *float64
+	Reso   *float64
 }
 
 const tau = (2 * math.Pi)
@@ -24,25 +26,24 @@ func Highpass(fs []float32, freq float64, delay float32, sr float64) []float32 {
 
 	return output
 }
+func (filter Filter) RunFilter(input []float32, delay float32, sr float64) []float32 {
+	return Lowpass(input, *filter.Cutoff, delay, sr, *filter.Reso)
+
+}
 
 //MOOG FILTER
 func Lowpass(input []float32, freq float64, delay float32, sr float64, resoVal float64) []float32 {
+	var in1, in2, in3, in4, out1, out2, out3, out4 float32
+	in1, in2, in3, in4, out1, out2, out3, out4 = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 	output := make([]float32, len(input))
 	copy(output, input)
+
 	newF := freq / 5000
 	newR := float32(resoVal / 1000)
-	in1 := float32(0.0)
-	in2 := float32(0.0)
-	in3 := float32(0.0)
-	in4 := float32(0.0)
-	out1 := float32(0.0)
-	out2 := float32(0.0)
-	out3 := float32(0.0)
-	out4 := float32(0.0)
 	f := float32(newF * 1.16)
 	fb := newR * (1 - 0.15*f*f)
 
-	for i, _ := range output {
+	for i := range output {
 		input[i] -= out4 * fb
 		input[i] *= 0.35013 * (f * f) * (f * f)
 		out1 = input[i] + 0.3*in1 + (1-f)*out1

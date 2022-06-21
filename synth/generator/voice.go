@@ -13,6 +13,9 @@ type Voice struct {
 	Lfo           *Lfo
 	ControlValues organism.OscPanelValues
 }
+type VoiceManager struct {
+	Voices []*Voice
+}
 
 func NewVoice(oscs []*Osc, filter *post_audio.Filter, adsr []*Adsr, noize []*Osc, lfo *Lfo, controlValues organism.OscPanelValues) *Voice {
 	return &Voice{oscs, filter, adsr, noize, lfo, controlValues}

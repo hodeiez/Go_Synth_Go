@@ -69,21 +69,17 @@ func testSelector() []string {
 func main() {
 	osc := generator.Oscillator(2048)
 	noize := generator.NoiseOsc(2048)
-	filterVal := 0.0
-	resoVal := 0.0
 
-	voice1 := generator.NewVoice([]*generator.Osc{&osc}, &post_audio.Filter{}, []*generator.Adsr{&generator.Adsr{}}, []*generator.Osc{&noize}, &generator.Lfo{}, oscPanel1)
+	voice1 := generator.NewVoice([]*generator.Osc{&osc}, &post_audio.Filter{oscPanel1.Cut, oscPanel1.Res}, []*generator.Adsr{&generator.Adsr{}}, []*generator.Osc{&noize}, &generator.Lfo{}, oscPanel1)
 
 	go gui.RunGUI(organism.SynthValues{Osc1: &voice1.ControlValues, Osc2: &oscPanel2})
-	go dsp.RunDSP(dsp.DspConf{BufferSize: 2048}, *voice1.Osc[0], *voice1.Noize[0], &filterVal, &resoVal) //TODO: pass as []voice
+	go dsp.RunDSP(dsp.DspConf{BufferSize: 2048}, *voice1) //TODO: pass as []voice
 	for {
 		//TODO:refactor to binding/controller function
 
 		voice1.Osc[0].Osc.Amplitude = *voice1.ControlValues.Vol / 1000
 		voice1.Osc[0].Osc.SetFreq(*voice1.ControlValues.Pitch * 10)
 		voice1.Noize[0].Osc.Amplitude = *voice1.ControlValues.Noize / 1000
-		filterVal = *voice1.ControlValues.Cut
-		resoVal = *voice1.ControlValues.Res
 
 	}
 }
