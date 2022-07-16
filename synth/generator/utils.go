@@ -27,7 +27,7 @@ func NoiseOsc(bufferSize int) Osc {
 	osc.Amplitude = 1
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, os.Kill)
-
+	println("noize running")
 	return Osc{Osc: osc, Buf: buf}
 
 }

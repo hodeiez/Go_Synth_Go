@@ -49,7 +49,9 @@ func RunDSP(dspConf DspConf, voice generator.Voice) {
 
 }
 func fillBuffers(voice generator.Voice) {
-	oscs := []generator.Osc{*voice.Osc[0], *voice.Noize[0]}
+	// oscs := []generator.Osc{*voice.Osc[0], *voice.Noize[0]}
+	//oscs := []*generator.Osc{}
+	oscs := append(voice.Osc, voice.Noize...)
 	for _, o := range oscs {
 		if err := o.Osc.Fill(o.Buf); err != nil {
 			log.Printf("error filling up the buffer")
@@ -60,7 +62,8 @@ func fillBuffers(voice generator.Voice) {
 }
 
 func Mixing(dst []float32, src DspConf, voice generator.Voice) []float32 {
-	oscs := []generator.Osc{*voice.Osc[0], *voice.Noize[0]}
+	//  oscs := []generator.Osc{*voice.Osc[0], *voice.Noize[0]}
+	oscs := append(voice.Osc, voice.Noize...)
 	PreMix(dst, oscs)
 
 	dst = voice.Filter.RunFilter(dst, 0.0001, 44100)
