@@ -59,10 +59,7 @@ var valToPass = organism.SynthValues{Osc1: &oscPanel1, Osc2: &oscPanel2}
 
 func testSelector() []string {
 	var string_first []string
-	string_first = append(string_first, "saw")
-	string_first = append(string_first, "tri")
-	string_first = append(string_first, "squ")
-	string_first = append(string_first, "sin")
+	string_first = append(string_first, "saw", "tri", "squ", "sin")
 	return string_first
 }
 
@@ -81,16 +78,13 @@ func main() {
 		for _, o := range voice1.Osc {
 			o.Osc.Amplitude = *voice1.ControlValues.Vol / 1000
 			o.Osc.SetFreq(*voice1.ControlValues.Pitch * 10)
-			//o.Osc.Amplitude = *voice1.ControlValues.Noize / 1000
+			generator.SelectWave(voice1.ControlValues.Selector.SelectedIndex, *o)
+
 		}
 		for _, n := range voice1.Noize {
-			// o.Osc.Amplitude = *voice1.ControlValues.Vol / 1000
-			// o.Osc.SetFreq(*voice1.ControlValues.Pitch * 10)
+
 			n.Osc.Amplitude = *voice1.ControlValues.Noize / 1000
 		}
-		// voice1.Osc[0].Osc.Amplitude = *voice1.ControlValues.Vol / 1000
-		// voice1.Osc[0].Osc.SetFreq(*voice1.ControlValues.Pitch * 10)
-		// voice1.Noize[0].Osc.Amplitude = *voice1.ControlValues.Noize / 1000
 
 	}
 }

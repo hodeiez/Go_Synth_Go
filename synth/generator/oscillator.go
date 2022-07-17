@@ -53,8 +53,8 @@ func Oscillator(bufferSize int) Osc {
 	//***************************
 
 	currentNote := 440.0
-	osc := generator.NewOsc(generator.WaveSine, currentNote, buf.Format.SampleRate)
-	osc.Amplitude = 1
+	osc := generator.NewOsc(generator.WaveSaw, currentNote, buf.Format.SampleRate)
+	osc.Amplitude = 0.1
 	osc.Freq = 440.0
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, os.Kill)
@@ -73,24 +73,40 @@ func Oscillator(bufferSize int) Osc {
 // 	}
 // 	return *osc
 // }
-
 // func SelectWave(selector MyWaveType, voices []*Voice) {
 // 	for _, o := range voices {
 // 		switch selector {
 // 		case 0:
 // 			o.Oscillator.Osc.Shape = generator.WaveType(generator.WaveTriangle)
-// 			o.Oscillator2.Osc.Shape = generator.WaveType(generator.WaveSine)
+
 // 		case 1:
 // 			o.Oscillator.Osc.Shape = generator.WaveType(generator.WaveSaw)
-// 			o.Oscillator2.Osc.Shape = generator.WaveType(generator.WaveTriangle)
+
 // 		case 2:
 // 			o.Oscillator.Osc.Shape = generator.WaveType(generator.WaveSqr)
-// 			o.Oscillator2.Osc.Shape = generator.WaveType(generator.WaveTriangle)
+
 // 		case 3:
 // 			o.Oscillator.Osc.Shape = generator.WaveType(generator.WaveSine)
-// 			o.Oscillator2.Osc.Shape = generator.WaveType(generator.WaveTriangle)
 
 // 		}
 
 // 	}
 // }
+func SelectWave(waveName int, o Osc) {
+	// for _, o := range voices {
+	switch waveName {
+	case 0:
+		o.Osc.Shape = generator.WaveType(generator.WaveSaw)
+	case 1:
+		o.Osc.Shape = generator.WaveType(generator.WaveTriangle)
+
+	case 2:
+		o.Osc.Shape = generator.WaveType(generator.WaveSqr)
+
+	case 3:
+		o.Osc.Shape = generator.WaveType(generator.WaveSine)
+
+	}
+
+	// }
+}
