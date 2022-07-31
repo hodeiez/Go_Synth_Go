@@ -70,20 +70,24 @@ func main() {
 		polyphony  = 2
 	)
 	voice1 := generator.NewVoice(&post_audio.Filter{oscPanel1.Cut, oscPanel1.Res}, []*generator.Adsr{&generator.Adsr{}}, &generator.Lfo{}, oscPanel1, polyphony, bufferSize)
-
+	voice2 := generator.NewVoice(&post_audio.Filter{oscPanel2.Cut, oscPanel2.Res}, []*generator.Adsr{&generator.Adsr{}}, &generator.Lfo{}, oscPanel2, polyphony, bufferSize)
+	voices := []*generator.Voice{voice1, voice2}
 	go gui.RunGUI(organism.SynthValues{Osc1: &voice1.ControlValues, Osc2: &oscPanel2})
-	go dsp.RunDSP(dsp.DspConf{BufferSize: bufferSize}, *voice1) //TODO: pass as []voice
+	go dsp.RunDSP(dsp.DspConf{BufferSize: bufferSize}, *voice1, voices) //TODO: pass as []voice
 	for {
 		//TODO:refactor to binding/controller function
-		for _, o := range voice1.Osc {
-			o.Osc.Amplitude = *voice1.ControlValues.Vol / 1000
-			o.Osc.SetFreq(*voice1.ControlValues.Pitch * 10)
-			generator.SelectWave(voice1.ControlValues.Selector.SelectedIndex, *o)
+		for _, v := range voices {
 
-		}
-		for _, n := range voice1.Noize {
+			for _, o := range v.Osc {
+				o.Osc.Amplitude = *v.ControlValues.Vol / 1000
+				o.Osc.SetFreq(*v.ControlValues.Pitch * 10)
+				generator.SelectWave(v.ControlValues.Selector.SelectedIndex, *o)
 
-			n.Osc.Amplitude = *voice1.ControlValues.Noize / 1000
+			}
+			for _, n := range v.Noize {
+
+				n.Osc.Amplitude = *v.ControlValues.Noize / 1000
+			}
 		}
 
 	}

@@ -14,7 +14,7 @@ type DspConf struct {
 }
 
 //TODO: review and fix the volume and amplitude
-func RunDSP(dspConf DspConf, voice generator.Voice) {
+func RunDSP(dspConf DspConf, voice generator.Voice, voices []*generator.Voice) {
 
 	portaudio.Initialize()
 	api, _ := portaudio.HostApis()
@@ -37,9 +37,10 @@ func RunDSP(dspConf DspConf, voice generator.Voice) {
 	}
 	defer stream.Stop()
 	for {
-		fillBuffers(voice)
 
-		out = Mixing(out, dspConf, voice)
+		fillBuffers(voices)
+
+		out = Mixing(out, dspConf, voices)
 		// write to the stream
 		if err := stream.Write(); err != nil {
 			log.Printf("error writing to stream : %v\n", err)
@@ -48,25 +49,48 @@ func RunDSP(dspConf DspConf, voice generator.Voice) {
 	}
 
 }
-func fillBuffers(voice generator.Voice) {
+func fillBuffers(voices []*generator.Voice) {
 	// oscs := []generator.Osc{*voice.Osc[0], *voice.Noize[0]}
 	//oscs := []*generator.Osc{}
-	oscs := append(voice.Osc, voice.Noize...)
-	for _, o := range oscs {
-		if err := o.Osc.Fill(o.Buf); err != nil {
-			log.Printf("error filling up the buffer")
-		}
+	for _, v := range voices {
+		oscs := append(v.Osc, v.Noize...)
+		for _, o := range oscs {
+			if err := o.Osc.Fill(o.Buf); err != nil {
+				log.Printf("error filling up the buffer")
+			}
 
+		}
 	}
 
 }
 
-func Mixing(dst []float32, src DspConf, voice generator.Voice) []float32 {
-	//  oscs := []generator.Osc{*voice.Osc[0], *voice.Noize[0]}
-	oscs := append(voice.Osc, voice.Noize...)
-	PreMix(dst, oscs)
+//TODO: abstract channels to its own object and methods and fix mixing
+func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 
-	dst = voice.Filter.RunFilter(dst, 0.0001, 44100)
+	var oscs []*generator.Osc
+
+	// var temp []float32
+	//m := dst
+	var audioChannels [][]float32
+	audioChannel := make([]float32, len(dst))
+
+	for _, v := range voices {
+
+		oscs = append(oscs, v.Osc...)
+		oscs = append(oscs, v.Noize...)
+		audioChannel = PreMix(dst, oscs)
+
+		audioChannel = v.Filter.RunFilter(audioChannel, 0.0001, 44100)
+
+		audioChannels = append(audioChannels, audioChannel)
+		for _, a := range audioChannels {
+			for i, _ := range a {
+				dst[i] += a[i]
+			}
+		}
+
+	}
+
 	return dst
 
 }
