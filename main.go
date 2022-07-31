@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	gui "hodei/gosynthgo/gui"
 	organism "hodei/gosynthgo/gui/components/organisms"
 	"hodei/gosynthgo/synth/dsp"
 	"hodei/gosynthgo/synth/generator"
+	"hodei/gosynthgo/synth/midi"
 	"hodei/gosynthgo/synth/post_audio"
 	//"log"
 )
@@ -64,17 +66,21 @@ func testSelector() []string {
 }
 
 func main() {
-
+	msg := make(chan midi.MidiMsg)
 	const (
 		bufferSize = 2048
 		polyphony  = 2
 	)
+
 	voice1 := generator.NewVoice(&post_audio.Filter{oscPanel1.Cut, oscPanel1.Res}, []*generator.Adsr{&generator.Adsr{}}, &generator.Lfo{}, oscPanel1, polyphony, bufferSize)
 	voice2 := generator.NewVoice(&post_audio.Filter{oscPanel2.Cut, oscPanel2.Res}, []*generator.Adsr{&generator.Adsr{}}, &generator.Lfo{}, oscPanel2, polyphony, bufferSize)
 	voices := []*generator.Voice{voice1, voice2}
+
+	go midi.RunMidi(msg)
 	go gui.RunGUI(organism.SynthValues{Osc1: &voice1.ControlValues, Osc2: &oscPanel2})
 	go dsp.RunDSP(dsp.DspConf{BufferSize: bufferSize}, *voice1, voices) //TODO: pass as []voice
 	for {
+		fmt.Println(<-msg)
 		//TODO:refactor to binding/controller function
 		for _, v := range voices {
 

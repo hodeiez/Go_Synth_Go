@@ -83,14 +83,13 @@ func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 		audioChannel = v.Filter.RunFilter(audioChannel, 0.0001, 44100)
 
 		audioChannels = append(audioChannels, audioChannel)
-		for _, a := range audioChannels {
-			for i, _ := range a {
-				dst[i] += a[i]
-			}
-		}
 
 	}
-
+	for _, a := range audioChannels {
+		for i, _ := range a {
+			dst[i] += a[i]
+		}
+	}
 	return dst
 
 }

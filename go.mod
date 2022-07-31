@@ -22,6 +22,8 @@ require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20220516021902-eb3e265c7661 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
 	github.com/sahilm/fuzzy v0.1.0 // indirect
+	gitlab.com/gomidi/midi v1.23.7
+	gitlab.com/gomidi/rtmididrv v0.15.0
 	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	gopkg.in/eapache/queue.v1 v1.1.0 // indirect
