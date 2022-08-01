@@ -14,7 +14,7 @@ type DspConf struct {
 }
 
 //TODO: review and fix the volume and amplitude
-func RunDSP(dspConf DspConf, voice generator.Voice, voices []*generator.Voice) {
+func RunDSP(dspConf DspConf, voices []*generator.Voice) {
 
 	portaudio.Initialize()
 	api, _ := portaudio.HostApis()
@@ -40,7 +40,7 @@ func RunDSP(dspConf DspConf, voice generator.Voice, voices []*generator.Voice) {
 
 		fillBuffers(voices)
 
-		out = Mixing(out, dspConf, voices)
+		Mixing(out, dspConf, voices)
 		// write to the stream
 		if err := stream.Write(); err != nil {
 			log.Printf("error writing to stream : %v\n", err)

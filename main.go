@@ -66,6 +66,7 @@ func testSelector() []string {
 }
 
 func main() {
+	///main vars
 	msg := make(chan midi.MidiMsg)
 	const (
 		bufferSize = 2048
@@ -76,25 +77,45 @@ func main() {
 	voice2 := generator.NewVoice(&post_audio.Filter{oscPanel2.Cut, oscPanel2.Res}, []*generator.Adsr{&generator.Adsr{}}, &generator.Lfo{}, oscPanel2, polyphony, bufferSize)
 	voices := []*generator.Voice{voice1, voice2}
 
+	//run processes
 	go midi.RunMidi(msg)
 	go gui.RunGUI(organism.SynthValues{Osc1: &voice1.ControlValues, Osc2: &oscPanel2})
-	go dsp.RunDSP(dsp.DspConf{BufferSize: bufferSize}, *voice1, voices) //TODO: pass as []voice
+	go dsp.RunDSP(dsp.DspConf{BufferSize: bufferSize}, voices)
+	//main loop
 	for {
-		fmt.Println(<-msg)
 		//TODO:refactor to binding/controller function
 		for _, v := range voices {
 
 			for _, o := range v.Osc {
 				o.Osc.Amplitude = *v.ControlValues.Vol / 1000
-				o.Osc.SetFreq(*v.ControlValues.Pitch * 10)
+				o.SetBaseFreq(*v.ControlValues.Pitch * 10) //TODO: make pitchShift function
+				// o.Osc.SetFreq(*v.ControlValues.Pitch * 10)
 				generator.SelectWave(v.ControlValues.Selector.SelectedIndex, *o)
 
 			}
 			for _, n := range v.Noize {
 
+				n.SetBaseFreq(*v.ControlValues.Pitch * 10)
 				n.Osc.Amplitude = *v.ControlValues.Noize / 1000
 			}
 		}
+
+		select {
+		case msg := <-msg:
+			for _, v := range voices {
+				for _, o := range v.Osc {
+					*o = generator.ChangeFreq(msg, o)
+				}
+				for _, n := range v.Noize {
+					generator.ChangeFreq(msg, n)
+				}
+			}
+			fmt.Println(msg)
+		default:
+
+		}
+
+		// fmt.Println(<-msg)
 
 	}
 }

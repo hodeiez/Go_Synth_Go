@@ -1,7 +1,9 @@
 package generator
 
 import (
+	"hodei/gosynthgo/synth/midi"
 	"log"
+	"math"
 
 	"os"
 	"os/signal"
@@ -63,16 +65,19 @@ func Oscillator(bufferSize int) Osc {
 	return Osc{0.0, osc, buf, 440.0}
 
 }
+func (osc *Osc) SetBaseFreq(freq float64) {
+	osc.BaseFreq = freq
+}
+func ChangeFreq(midimsg midi.MidiMsg, osc *Osc) Osc {
 
-// func ChangeFreq(midimsg midi.MidiMsg, osc *Osc) Osc {
+	NoteToPitch := (osc.BaseFreq / 32) * (math.Pow(2, ((float64(midimsg.Key) - 9) / 12)))
 
-// 	NoteToPitch := (osc.BaseFreq / 32) * (math.Pow(2, ((float64(midimsg.Key) - 9) / 12)))
+	if midimsg.On {
+		osc.Osc.SetFreq(NoteToPitch)
+	}
+	return *osc
+}
 
-// 	if midimsg.On {
-// 		osc.Osc.SetFreq(NoteToPitch)
-// 	}
-// 	return *osc
-// }
 // func SelectWave(selector MyWaveType, voices []*Voice) {
 // 	for _, o := range voices {
 // 		switch selector {

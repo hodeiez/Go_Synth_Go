@@ -12,10 +12,14 @@ import (
 )
 
 type MidiMsg struct {
-	Key int  //
-	On  bool //
-	Off bool
-	Vel int64
+	Key    int  //
+	On     bool //
+	Off    bool
+	Vel    int64
+	Cha    int64
+	Ctl    int64
+	CtlVal int64
+	Pitch  int64
 }
 
 func RunMidi(val chan MidiMsg) {
@@ -72,20 +76,27 @@ func must(err error) {
 		panic(err.Error())
 	}
 }
-func ToMidiMsg(message string) MidiMsg {
-	println(message)
-	thekey, errK := strconv.ParseInt(strings.Fields(message)[4], 10, 64)
-	isOff := strings.Contains(strings.Fields(message)[0], "channel.NoteOff")
-	isOn := strings.Contains(strings.Fields(message)[0], "NoteOn")
-	var velocity int64
-	if len(strings.Fields(message)) > 5 {
-		velocityT, errV := strconv.ParseInt(strings.Fields(message)[6], 10, 64)
-		must(errV)
-		velocity = velocityT
-	} else {
-		velocity = 0
-	}
-	must(errK)
 
-	return MidiMsg{Key: int(thekey), On: isOn, Off: isOff, Vel: velocity}
+func ToMidiMsg(message string) MidiMsg {
+	var isOff, isOn bool
+	var velocity, theKey, ctl, ctlVal, pitch int64 = 0, 0, 0, 0, 0
+
+	println(message)
+	channel, _ := strconv.ParseInt(strings.Fields(message)[2], 10, 64)
+
+	switch true {
+	case strings.Contains(strings.Fields(message)[0], "NoteOff"):
+		isOff = true
+	case strings.Contains(strings.Fields(message)[0], "NoteOn"):
+		isOn = true
+		velocity, _ = strconv.ParseInt(strings.Fields(message)[6], 10, 64)
+		theKey, _ = strconv.ParseInt(strings.Fields(message)[4], 10, 64)
+	case strings.Contains(strings.Fields(message)[0], "ControlChange"):
+		ctl, _ = strconv.ParseInt(strings.Fields(message)[4], 10, 64)
+		ctlVal, _ = strconv.ParseInt(strings.Fields(message)[len(strings.Fields(message))-1], 10, 64)
+	case strings.Contains(strings.Fields(message)[0], "Pitchbend"):
+		pitch, _ = strconv.ParseInt(strings.Fields(message)[4], 10, 64)
+	}
+
+	return MidiMsg{Key: int(theKey), On: isOn, Off: isOff, Vel: velocity, Cha: channel, Ctl: ctl, CtlVal: ctlVal, Pitch: pitch}
 }
