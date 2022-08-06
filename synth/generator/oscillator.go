@@ -99,15 +99,6 @@ func (osc *Osc) ChangeFreq(midimsg midi.MidiMsg) {
 	//	return *osc
 }
 
-// func ChangeFreq(midimsg midi.MidiMsg, osc *Osc) Osc {
-
-// 	NoteToPitch := (osc.BaseFreq / 32) * (math.Pow(2, ((float64(midimsg.Key) - 9) / 12)))
-
-// 	if midimsg.On {
-// 		osc.Osc.SetFreq(NoteToPitch)
-// 	}
-// 	return *osc
-// }
 func (o *Osc) ChangeFreq2(midimsg midi.MidiMsg) {
 
 	NoteToPitch := (o.BaseFreq / 32) * (math.Pow(2, ((float64(midimsg.Key) - 9) / 12)))
@@ -129,4 +120,6 @@ func SelectWave(waveName int, o Osc) {
 
 	}
 
+}
+func (o *Osc) SetGain(gain float64) {
 }

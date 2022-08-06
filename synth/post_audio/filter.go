@@ -31,6 +31,7 @@ func (filter Filter) RunFilter(input []float32, delay float32, sr float64) []flo
 
 }
 
+//TODO: fix calculations
 //MOOG FILTER
 func Lowpass(input []float32, freq float64, delay float32, sr float64, resoVal float64) []float32 {
 	var in1, in2, in3, in4, out1, out2, out3, out4 float32
@@ -45,7 +46,7 @@ func Lowpass(input []float32, freq float64, delay float32, sr float64, resoVal f
 
 	for i := range output {
 		input[i] -= out4 * fb
-		input[i] *= 0.35013 * (f * f) * (f * f)
+		input[i] *= 0.85013 * (f * f) * (f * f)
 		out1 = input[i] + 0.3*in1 + (1-f)*out1
 		in1 = input[i]
 		out2 = out1 + 0.3*in2 + (1-f)*out2
