@@ -70,7 +70,7 @@ func main() {
 	msg := make(chan midi.MidiMsg)
 	const (
 		bufferSize = 2048
-		polyphony  = 2
+		polyphony  = 40
 	)
 
 	voice1 := generator.NewVoice(&post_audio.Filter{oscPanel1.Cut, oscPanel1.Res}, []*generator.Adsr{&generator.Adsr{}}, &generator.Lfo{}, oscPanel1, polyphony, bufferSize)
@@ -85,31 +85,35 @@ func main() {
 	for {
 		//TODO:refactor to binding/controller function
 		for _, v := range voices {
-
-			for _, o := range v.Osc {
-				o.Osc.Amplitude = *v.ControlValues.Vol / 1000
-				o.SetBaseFreq(*v.ControlValues.Pitch * 10) //TODO: make pitchShift function
+			for _, o := range v.Tones {
+				//	o.Osc.Osc.Amplitude = *v.ControlValues.Vol / 1000
+				//o.SetBaseFreq(*v.ControlValues.Pitch * 10) //TODO: make pitchShift function
 				// o.Osc.SetFreq(*v.ControlValues.Pitch * 10)
-				generator.SelectWave(v.ControlValues.Selector.SelectedIndex, *o)
+				if o.Type == generator.Regular {
+
+					generator.SelectWave(v.ControlValues.Selector.SelectedIndex, o.Osc)
+				}
 
 			}
-			for _, n := range v.Noize {
+			// for _, n := range v.Noize {
 
-				n.SetBaseFreq(*v.ControlValues.Pitch * 10)
-				n.Osc.Amplitude = *v.ControlValues.Noize / 1000
-			}
+			// 	//n.SetBaseFreq(*v.ControlValues.Pitch * 10)
+			// 	n.Osc.Osc.Amplitude = *v.ControlValues.Noize / 1000
+			// }
 		}
 
 		select {
 		case msg := <-msg:
-			for _, v := range voices {
-				for _, o := range v.Osc {
-					*o = generator.ChangeFreq(msg, o)
-				}
-				for _, n := range v.Noize {
-					generator.ChangeFreq(msg, n)
-				}
-			}
+			voice1.RunPolly(msg)
+			voice2.RunPolly(msg)
+			// for _, v := range voices {
+			// 	for _, o := range v.Osc {
+			// 		*o = generator.ChangeFreq(msg, o)
+			// 	}
+			// 	for _, n := range v.Noize {
+			// 		generator.ChangeFreq(msg, n)
+			// 	}
+			// }
 			fmt.Println(msg)
 		default:
 

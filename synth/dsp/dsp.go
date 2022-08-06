@@ -53,9 +53,8 @@ func fillBuffers(voices []*generator.Voice) {
 	// oscs := []generator.Osc{*voice.Osc[0], *voice.Noize[0]}
 	//oscs := []*generator.Osc{}
 	for _, v := range voices {
-		oscs := append(v.Osc, v.Noize...)
-		for _, o := range oscs {
-			if err := o.Osc.Fill(o.Buf); err != nil {
+		for _, o := range v.Tones {
+			if err := o.Osc.Osc.Fill(o.Osc.Buf); err != nil {
 				log.Printf("error filling up the buffer")
 			}
 
@@ -67,7 +66,7 @@ func fillBuffers(voices []*generator.Voice) {
 //TODO: abstract channels to its own object and methods and fix mixing
 func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 
-	var oscs []*generator.Osc
+	var oscs []*generator.Tone
 
 	// var temp []float32
 	//m := dst
@@ -76,8 +75,8 @@ func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 
 	for _, v := range voices {
 
-		oscs = append(oscs, v.Osc...)
-		oscs = append(oscs, v.Noize...)
+		oscs = append(oscs, v.Tones...)
+		// oscs = append(oscs, v.Noize...)
 		audioChannel = PreMix(dst, oscs)
 
 		audioChannel = v.Filter.RunFilter(audioChannel, 0.0001, 44100)

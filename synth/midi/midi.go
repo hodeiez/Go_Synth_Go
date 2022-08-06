@@ -12,9 +12,9 @@ import (
 )
 
 type MidiMsg struct {
-	Key    int  //
-	On     bool //
-	Off    bool
+	Key int  //
+	On  bool //
+	// Off    bool //TODO:REMOVE THIS
 	Vel    int64
 	Cha    int64
 	Ctl    int64
@@ -78,7 +78,7 @@ func must(err error) {
 }
 
 func ToMidiMsg(message string) MidiMsg {
-	var isOff, isOn bool
+	var isOn bool
 	var velocity, theKey, ctl, ctlVal, pitch int64 = 0, 0, 0, 0, 0
 
 	println(message)
@@ -86,7 +86,8 @@ func ToMidiMsg(message string) MidiMsg {
 
 	switch true {
 	case strings.Contains(strings.Fields(message)[0], "NoteOff"):
-		isOff = true
+		isOn = false
+		theKey, _ = strconv.ParseInt(strings.Fields(message)[4], 10, 64)
 	case strings.Contains(strings.Fields(message)[0], "NoteOn"):
 		isOn = true
 		velocity, _ = strconv.ParseInt(strings.Fields(message)[6], 10, 64)
@@ -98,5 +99,5 @@ func ToMidiMsg(message string) MidiMsg {
 		pitch, _ = strconv.ParseInt(strings.Fields(message)[4], 10, 64)
 	}
 
-	return MidiMsg{Key: int(theKey), On: isOn, Off: isOff, Vel: velocity, Cha: channel, Ctl: ctl, CtlVal: ctlVal, Pitch: pitch}
+	return MidiMsg{Key: int(theKey), On: isOn, Vel: velocity, Cha: channel, Ctl: ctl, CtlVal: ctlVal, Pitch: pitch}
 }
