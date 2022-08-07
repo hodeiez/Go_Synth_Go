@@ -2,6 +2,7 @@ package dsp
 
 import (
 	"hodei/gosynthgo/synth/generator"
+	"hodei/gosynthgo/synth/post_audio"
 
 	"log"
 
@@ -80,7 +81,7 @@ func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 		audioChannel = PreMix(dst, oscs)
 
 		audioChannel = v.Filter.RunFilter(audioChannel, 0.0001, 44100)
-
+		audioChannel = post_audio.Amp(audioChannel, float32(*v.ControlValues.Vol/100))
 		audioChannels = append(audioChannels, audioChannel)
 
 	}

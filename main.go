@@ -8,7 +8,6 @@ import (
 	"hodei/gosynthgo/synth/generator"
 	"hodei/gosynthgo/synth/midi"
 	"hodei/gosynthgo/synth/post_audio"
-	//"log"
 )
 
 func main() {
@@ -36,12 +35,20 @@ func main() {
 				// o.Osc.SetFreq(*v.ControlValues.Pitch * 10)
 
 				if o.Type == generator.Regular {
-					temp := *v.ControlValues.Vol / 1000
-					if o.Osc.Osc.Amplitude != temp && o.Osc.Osc.Amplitude != 0.0 {
-						o.Osc.Osc.Amplitude = temp
-					}
-					// o.Osc.Osc.Amplitude = *v.ControlValues.Vol / -1000
+
+					//temp := o.Osc.Osc.Amplitude + (*v.ControlValues.Vol / 6000)
+
+					// if o.Osc.Osc.Amplitude != temp && o.Osc.Osc.Amplitude != 0.0 {
+					// 	o.Osc.Osc.Amplitude = temp
+					// }
+
 					generator.SelectWave(v.ControlValues.Selector.SelectedIndex, o.Osc)
+				}
+				if o.Type == generator.Noize {
+					if o.Osc.Osc.Amplitude != 0.0 {
+						o.Osc.Osc.Amplitude = *v.ControlValues.Noize / 1000
+					}
+
 				}
 
 			}

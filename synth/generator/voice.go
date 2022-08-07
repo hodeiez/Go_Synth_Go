@@ -32,7 +32,7 @@ func NewVoice(filter *post_audio.Filter, adsr []*Adsr, lfo *Lfo, controlValues o
 
 }
 
-//TODO: decide if noize is property in TOne as osc
+//TODO: decide if noize is property in TOne as it is Osc
 func (vo *Voice) RunPolly(message midi.MidiMsg) {
 
 	oscKey := findWithKey(vo.Tones, message.Key, Regular)

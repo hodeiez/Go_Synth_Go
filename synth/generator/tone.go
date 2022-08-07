@@ -27,7 +27,8 @@ func (t *Tone) BindToOSC(message midi.MidiMsg) {
 	//TODO: change this when ADSR is on
 	if t.IsOn {
 		if t.Type == Regular {
-			t.Osc.Osc.Amplitude = 0.01
+			t.Osc.Osc.Amplitude = RescaleMidiValues(message.Vel, 0.0, 0.1) //it gets velocity value
+			// t.Osc.Osc.Amplitude = 0.01 * float64(message.Vel)
 		} else {
 			t.Osc.Osc.Amplitude = 0.01
 		}

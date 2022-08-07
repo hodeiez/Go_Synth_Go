@@ -121,5 +121,5 @@ func SelectWave(waveName int, o Osc) {
 	}
 
 }
-func (o *Osc) SetGain(gain float64) {
+func (o *Osc) addGain(gain float64) {
 }

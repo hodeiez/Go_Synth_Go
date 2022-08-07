@@ -1,12 +1,10 @@
 package generator
 
-import (
 // "os"
 // "os/signal"
 
 // "github.com/go-audio/audio"
 // "github.com/go-audio/generator"
-)
 
 type Pwm struct {
 }
@@ -26,3 +24,6 @@ type Pwm struct {
 // 	return Osc{Osc: osc, Buf: buf}
 
 // }
+func RescaleMidiValues(value int64, outMin float64, outMax float64) float64 {
+	return float64(value-0)*(outMax-outMin)/float64(127) + outMin
+}

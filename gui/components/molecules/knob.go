@@ -27,7 +27,7 @@ func Knob(pos image.Point, pValue *float64, label string) *KnobWidget {
 		pos:       pos,
 		pValue:    pValue,
 		label:     label,
-		min:       0,
+		min:       1,
 		max:       100,
 		size:      30,
 		colorOut:  color.RGBA{200, 200, 200, 255},
