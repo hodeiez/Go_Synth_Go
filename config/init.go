@@ -4,7 +4,7 @@ import organism "hodei/gosynthgo/gui/components/organisms"
 
 var (
 	vol1   = 0.0
-	pitch1 = 0.0
+	pitch1 = 440.0
 	cut1   = 0.0
 	res1   = 0.0
 	pwm1   = 0.0
@@ -14,7 +14,7 @@ var (
 )
 var (
 	vol2   = 0.0
-	pitch2 = 0.0
+	pitch2 = 440.0
 	cut2   = 0.0
 	res2   = 0.0
 	pwm2   = 0.0

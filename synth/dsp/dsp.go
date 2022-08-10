@@ -14,7 +14,6 @@ type DspConf struct {
 	BufferSize int
 }
 
-//TODO: review and fix the volume and amplitude
 func RunDSP(dspConf DspConf, voices []*generator.Voice) {
 
 	portaudio.Initialize()

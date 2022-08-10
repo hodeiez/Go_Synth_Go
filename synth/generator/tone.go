@@ -36,3 +36,16 @@ func (t *Tone) BindToOSC(message midi.MidiMsg) {
 		t.Osc.Osc.Amplitude = 0.0000
 	}
 }
+
+func (t *Tone) SetPitch(pitch float64, freq float64) {
+
+	if t.Osc.BaseFreq != pitch {
+		t.Osc.Osc.SetFreq((pitch - t.Osc.BaseFreq) + freq)
+	}
+
+}
+func (t Tone) SendPitch(pitchTest chan float64) {
+
+	t.SetPitch(<-pitchTest, t.Osc.Osc.Freq)
+
+}
