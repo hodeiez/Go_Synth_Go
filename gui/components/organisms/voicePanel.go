@@ -20,16 +20,17 @@ type SelectorValues struct {
 	SelectedIndex int
 }
 type OscPanelValues struct {
-	Adsr     *AdsrValues
-	Vol      *float64
-	Pitch    *float64
-	Cut      *float64
-	Res      *float64
-	Pwm      *float64
-	LfoR     *float64
-	LfoW     *float64
-	Noize    *float64
-	Selector *SelectorValues
+	Adsr      *AdsrValues
+	Vol       *float64
+	Pitch     *float64
+	PitchInit *float64
+	Cut       *float64
+	Res       *float64
+	Pwm       *float64
+	LfoR      *float64
+	LfoW      *float64
+	Noize     *float64
+	Selector  *SelectorValues
 }
 
 type SynthValues struct {
@@ -45,7 +46,7 @@ func VoicePanel(val *SynthValues) *g.ColumnWidget {
 func oscPanel(title string, ypos int, val *OscPanelValues) *g.ChildWidget {
 	return oscPanelStyled().Layout(
 		titleStyled(title),
-		g.Row(g.Column(g.Dummy(400, 70), components.Selector(val.Selector.TextValues, &val.Selector.SelectedIndex).Build()),
+		g.Row(g.Column(g.Dummy(400, 70), components.Selector(val.Selector.TextValues, &val.Selector.SelectedIndex).Build()), g.Dummy(50, 10), g.Column(g.Style().SetColor(g.StyleColorButton, color.RGBA{0, 0, 0, 255}).To(myButton(*val.Pitch, *val.PitchInit))),
 			g.AlignManually(g.AlignRight, ADSRpanelInit(&val.Adsr.Att, &val.Adsr.Dec, &val.Adsr.Sus, &val.Adsr.Rel), 400, true)),
 
 		components.Knob(image.Pt(g.GetCursorPos().X+200, g.GetCursorPos().Y+ypos), val.Vol, "VOL"),
@@ -69,4 +70,10 @@ func titleStyled(title string) *g.StyleSetter {
 }
 func panelStyled(children *g.ChildWidget, color color.RGBA) *g.StyleSetter {
 	return g.Style().SetColor(g.StyleColorChildBg, color).To(children)
+}
+func myButton(valPitch float64, initVal float64) *g.ButtonWidget {
+	return g.Button("Tune me").OnClick(func() {
+		valPitch = initVal
+		println(valPitch)
+	})
 }
