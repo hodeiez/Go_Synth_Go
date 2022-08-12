@@ -46,7 +46,11 @@ func VoicePanel(val *SynthValues) *g.ColumnWidget {
 func oscPanel(title string, ypos int, val *OscPanelValues) *g.ChildWidget {
 	return oscPanelStyled().Layout(
 		titleStyled(title),
-		g.Row(g.Column(g.Dummy(400, 70), components.Selector(val.Selector.TextValues, &val.Selector.SelectedIndex).Build()), g.Dummy(50, 10), g.Column(g.Style().SetColor(g.StyleColorButton, color.RGBA{0, 0, 0, 255}).To(myButton(*val.Pitch, *val.PitchInit))),
+		g.Row(g.Column(
+			g.Dummy(400, 70),
+			components.Selector(val.Selector.TextValues, &val.Selector.SelectedIndex).Build()), g.Dummy(50, 10),
+			g.Column(g.Column(components.Button(styles.Red, styles.Blackish, styles.Redhite, val.Pitch, *val.PitchInit, "Tune me").Build())),
+			// g.Column(components.Button(styles.Red, styles.Blackish, styles.Redhite, val.Pitch, *val.PitchInit, "Reset").Build())),//TODO: implement reset everything
 			g.AlignManually(g.AlignRight, ADSRpanelInit(&val.Adsr.Att, &val.Adsr.Dec, &val.Adsr.Sus, &val.Adsr.Rel), 400, true)),
 
 		components.Knob(image.Pt(g.GetCursorPos().X+200, g.GetCursorPos().Y+ypos), val.Vol, "VOL"),
@@ -70,10 +74,4 @@ func titleStyled(title string) *g.StyleSetter {
 }
 func panelStyled(children *g.ChildWidget, color color.RGBA) *g.StyleSetter {
 	return g.Style().SetColor(g.StyleColorChildBg, color).To(children)
-}
-func myButton(valPitch float64, initVal float64) *g.ButtonWidget {
-	return g.Button("Tune me").OnClick(func() {
-		valPitch = initVal
-		println(valPitch)
-	})
 }

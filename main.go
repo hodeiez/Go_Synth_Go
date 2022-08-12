@@ -40,11 +40,6 @@ func main() {
 					go t.SendPitch(pitchTest)
 					pitchTest <- *v.ControlValues.Pitch
 					t.Osc.SetBaseFreq(*v.ControlValues.Pitch)
-					/*
-					   note 10
-					   knob 10 = base 10 + note 10=20
-					   pitch 10
-					*/
 
 					generator.SelectWave(v.ControlValues.Selector.SelectedIndex, t.Osc)
 				}

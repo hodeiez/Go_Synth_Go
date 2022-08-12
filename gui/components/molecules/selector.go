@@ -37,8 +37,3 @@ func (s *SelectorWidget) Build() *g.RowWidget {
 	styledLabel := (g.Style().SetColor(g.StyleColorText, color.RGBA{0, 0, 0, 255}).To(g.Style().SetFontSize(2).To(s.label)))
 	return g.Row(s.leftArrow, styledLabel, s.rightArrow)
 }
-
-// func (s *SelectorWidget) Build() {
-// 	s.label = g.Label("labelfdasfdsafsadfsda")
-// 	g.Row(s.leftArrow, s.label, s.rightArrow)
-// }
