@@ -55,6 +55,7 @@ func Lowpass(input []float32, freq float64, delay float32, sr float64, resoVal f
 		in3 = out2
 		out4 = out3 + 0.3*in4 + (1-f)*out4
 		in4 = out3
+		// out4 *= (1 - f)
 		output[i] = out4
 
 	}

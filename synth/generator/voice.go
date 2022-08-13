@@ -9,7 +9,7 @@ import (
 type Voice struct {
 	Tones         []*Tone
 	Filter        *post_audio.Filter
-	Adsr          []*Adsr //polyphony
+	Adsr          *Adsr //polyphony
 	Lfo           *Lfo
 	ControlValues organism.OscPanelValues
 }
@@ -17,7 +17,7 @@ type VoiceManager struct {
 	Voices []*Voice
 }
 
-func NewVoice(filter *post_audio.Filter, adsr []*Adsr, lfo *Lfo, controlValues organism.OscPanelValues, polyphony int, bufferSize int) *Voice {
+func NewVoice(filter *post_audio.Filter, adsr *Adsr, lfo *Lfo, controlValues organism.OscPanelValues, polyphony int, bufferSize int) *Voice {
 
 	var tones []*Tone
 	for i := 0; i <= polyphony; i++ {

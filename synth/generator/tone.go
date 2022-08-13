@@ -28,8 +28,11 @@ func (t *Tone) BindToOSC(message midi.MidiMsg) {
 	if t.IsOn {
 		if t.Type == Regular {
 			t.Osc.Osc.Amplitude = RescaleMidiValues(message.Vel, 0.0, 0.1) //it gets velocity value
+
 			// t.Osc.Osc.Amplitude = 0.01 * float64(message.Vel)
 		} else {
+			// t.Osc.Osc.Amplitude = RescaleMidiValues(message.Vel, 0.0, 0.1) //it gets velocity value
+
 			t.Osc.Osc.Amplitude = 0.01
 		}
 	} else {

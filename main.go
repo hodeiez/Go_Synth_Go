@@ -7,38 +7,25 @@ import (
 	"hodei/gosynthgo/synth/dsp"
 	"hodei/gosynthgo/synth/generator"
 	"hodei/gosynthgo/synth/midi"
-	"hodei/gosynthgo/synth/post_audio"
 )
 
 func main() {
 	///main vars
 	msg := make(chan midi.MidiMsg)
-	const (
-		bufferSize = 2048
-		polyphony  = 40
-	)
-
-	voice1 := generator.NewVoice(&post_audio.Filter{Cutoff: config.OscPanel1.Cut, Reso: config.OscPanel1.Res}, []*generator.Adsr{&generator.Adsr{}}, &generator.Lfo{}, config.OscPanel1, polyphony, bufferSize)
-	voice2 := generator.NewVoice(&post_audio.Filter{Cutoff: config.OscPanel2.Cut, Reso: config.OscPanel2.Res}, []*generator.Adsr{&generator.Adsr{}}, &generator.Lfo{}, config.OscPanel2, polyphony, bufferSize)
-	voices := []*generator.Voice{voice1, voice2}
-	//run processes
 	go midi.RunMidi(msg)
-	go gui.RunGUI(organism.SynthValues{Osc1: &voice1.ControlValues, Osc2: &config.OscPanel2})
-	go dsp.RunDSP(dsp.DspConf{BufferSize: bufferSize}, voices)
+	go gui.RunGUI(organism.SynthValues{Osc1: &config.OscPanel1, Osc2: &config.OscPanel2})
+	go dsp.RunDSP(dsp.DspConf{BufferSize: config.BufferSize}, config.Voices)
 
-	//main loop
-	// pitch := 0.0
-	pitchTest := make(chan float64)
+	pitcChan := make(chan float64)
 	for {
 
-		//TODO:refactor to binding/controller function
-		for _, v := range voices {
+		for _, v := range config.Voices {
 			for _, t := range v.Tones {
 
 				if t.Type == generator.Regular {
 
-					go t.SendPitch(pitchTest)
-					pitchTest <- *v.ControlValues.Pitch
+					go t.SendPitch(pitcChan)
+					pitcChan <- *v.ControlValues.Pitch
 					t.Osc.SetBaseFreq(*v.ControlValues.Pitch)
 
 					generator.SelectWave(v.ControlValues.Selector.SelectedIndex, t.Osc)
@@ -60,8 +47,8 @@ func main() {
 
 		select {
 		case msg := <-msg:
-			voice1.RunPolly(msg)
-			voice2.RunPolly(msg)
+			config.Voices[0].RunPolly(msg)
+			config.Voices[1].RunPolly(msg)
 
 		default:
 

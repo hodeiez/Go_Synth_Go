@@ -1,6 +1,10 @@
 package config
 
-import organism "hodei/gosynthgo/gui/components/organisms"
+import (
+	organism "hodei/gosynthgo/gui/components/organisms"
+	"hodei/gosynthgo/synth/generator"
+	"hodei/gosynthgo/synth/post_audio"
+)
 
 var (
 	pitchInit = float64(440.0)
@@ -61,3 +65,38 @@ func testSelector() []string {
 	string_first = append(string_first, "saw", "tri", "squ", "sin")
 	return string_first
 }
+
+const (
+	BufferSize = 2048
+	polyphony  = 40
+)
+
+var voice1 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel1.Cut, Reso: OscPanel1.Res},
+	&generator.Adsr{
+		AttackTime:  float64(OscPanel1.Adsr.Att),
+		DecayTime:   float64(OscPanel1.Adsr.Dec),
+		ReleaseTime: float64(OscPanel1.Adsr.Rel),
+		SustainAmp:  float64(OscPanel1.Adsr.Sus),
+		Type:        generator.EnvelopeAdsr,
+		MinValue:    0.0,
+		MaxValue:    0.0},
+	&generator.Lfo{},
+	OscPanel1,
+	polyphony,
+	BufferSize)
+
+var voice2 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel2.Cut, Reso: OscPanel2.Res},
+	&generator.Adsr{
+		AttackTime:  float64(OscPanel2.Adsr.Att),
+		DecayTime:   float64(OscPanel2.Adsr.Dec),
+		ReleaseTime: float64(OscPanel2.Adsr.Rel),
+		SustainAmp:  float64(OscPanel2.Adsr.Sus),
+		Type:        generator.EnvelopeAdsr,
+		MinValue:    0.0,
+		MaxValue:    0.0},
+	&generator.Lfo{},
+	OscPanel2,
+	polyphony,
+	BufferSize)
+
+var Voices = []*generator.Voice{voice1, voice2}
