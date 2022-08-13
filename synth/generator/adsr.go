@@ -3,10 +3,10 @@ package generator
 // import "time"
 
 type Adsr struct {
-	AttackTime  float64
-	DecayTime   float64
-	SustainAmp  float64
-	ReleaseTime float64
+	AttackTime  *int32
+	DecayTime   *int32
+	SustainAmp  *int32
+	ReleaseTime *int32
 	MinValue    float64
 	MaxValue    float64
 	Type        AdsrType

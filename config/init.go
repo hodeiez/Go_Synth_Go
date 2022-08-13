@@ -73,10 +73,10 @@ const (
 
 var voice1 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel1.Cut, Reso: OscPanel1.Res},
 	&generator.Adsr{
-		AttackTime:  float64(OscPanel1.Adsr.Att),
-		DecayTime:   float64(OscPanel1.Adsr.Dec),
-		ReleaseTime: float64(OscPanel1.Adsr.Rel),
-		SustainAmp:  float64(OscPanel1.Adsr.Sus),
+		AttackTime:  &OscPanel1.Adsr.Att,
+		DecayTime:   &OscPanel1.Adsr.Dec,
+		ReleaseTime: &OscPanel1.Adsr.Rel,
+		SustainAmp:  &OscPanel1.Adsr.Sus,
 		Type:        generator.EnvelopeAdsr,
 		MinValue:    0.0,
 		MaxValue:    0.0},
@@ -87,10 +87,10 @@ var voice1 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel1.Cut, Reso: 
 
 var voice2 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel2.Cut, Reso: OscPanel2.Res},
 	&generator.Adsr{
-		AttackTime:  float64(OscPanel2.Adsr.Att),
-		DecayTime:   float64(OscPanel2.Adsr.Dec),
-		ReleaseTime: float64(OscPanel2.Adsr.Rel),
-		SustainAmp:  float64(OscPanel2.Adsr.Sus),
+		AttackTime:  &OscPanel2.Adsr.Att,
+		DecayTime:   &OscPanel2.Adsr.Dec,
+		ReleaseTime: &OscPanel2.Adsr.Rel,
+		SustainAmp:  &OscPanel2.Adsr.Sus,
 		Type:        generator.EnvelopeAdsr,
 		MinValue:    0.0,
 		MaxValue:    0.0},
