@@ -37,24 +37,29 @@ func (vo *Voice) RunPolly(message midi.MidiMsg) {
 
 	oscKey := findWithKey(vo.Tones, message.Key, Regular)
 	noizeKey := findWithKey(vo.Tones, message.Key, Noize)
-	oscOff := findFirstKeyZeroAndOff(vo.Tones, Regular)
-	noizeOff := findFirstKeyZeroAndOff(vo.Tones, Noize)
-
+	oscOff := findFirstOff(vo.Tones, Regular)
+	noizeOff := findFirstOff(vo.Tones, Noize)
+	// oscOff := findFirstKeyZeroAndOff(vo.Tones, Regular)
+	// noizeOff := findFirstKeyZeroAndOff(vo.Tones, Noize)
+	// for _, v := range vo.Tones {
+	// if v.Type != Noize {
+	// println(v.ShowStatus())
+	// }
+	// }
 	if message.On {
-		if oscKey != nil && !oscKey.IsOn && noizeKey != nil && !noizeKey.IsOn {
-			oscKey.BindToOSC(message)
-			noizeKey.BindToOSC(message)
 
-		} else if oscOff != nil && noizeOff != nil {
-			oscOff.BindToOSC(message)
-			noizeOff.BindToOSC(message)
+		if oscOff != nil && noizeOff != nil {
+			oscOff.BindToOSC(message, vo.Adsr)
+			noizeOff.BindToOSC(message, vo.Adsr)
 
 		}
 
 	} else if !message.On {
 		if oscKey != nil && oscKey.IsOn && noizeKey != nil && noizeKey.IsOn {
-			oscKey.BindToOSC(message)
-			noizeKey.BindToOSC(message)
+
+			// message.Key = 0
+			oscKey.BindToOSC(message, vo.Adsr)
+			noizeKey.BindToOSC(message, vo.Adsr)
 
 		}
 
@@ -73,6 +78,14 @@ func findFirstKeyZeroAndOff(tones []*Tone, oscType OscType) *Tone {
 func findWithKey(tones []*Tone, key int, oscType OscType) *Tone {
 	for _, tone := range tones {
 		if tone.Key == key && tone.Type == oscType {
+			return tone
+		}
+	}
+	return nil
+}
+func findFirstOff(tones []*Tone, oscType OscType) *Tone {
+	for _, tone := range tones {
+		if !tone.IsOn && tone.Type == oscType {
 			return tone
 		}
 	}
