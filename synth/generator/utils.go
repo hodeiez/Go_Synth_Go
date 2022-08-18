@@ -9,21 +9,9 @@ package generator
 type Pwm struct {
 }
 
-// func NoiseOsc(bufferSize int) Osc {
-
-// 	buf := &audio.FloatBuffer{
-// 		Data:   make([]float64, bufferSize),
-// 		Format: audio.FormatStereo44100,
-// 	}
-
-// 	osc := generator.NewOsc(generator.WaveNoise, 440.0, buf.Format.SampleRate)
-// 	osc.Amplitude = 1
-// 	sig := make(chan os.Signal, 1)
-// 	signal.Notify(sig, os.Interrupt, os.Kill)
-// 	println("noize running")
-// 	return Osc{Osc: osc, Buf: buf}
-
-// }
 func RescaleMidiValues(value int64, outMin float64, outMax float64) float64 {
 	return float64(value-0)*(outMax-outMin)/float64(127) + outMin
+}
+func RescaleToMilliSeconds(value int32, inMin float64, inMax float64, milisecondsAmount int32) float64 {
+	return (float64(value) - inMin) * float64(milisecondsAmount*1000) / inMax
 }

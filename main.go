@@ -30,12 +30,14 @@ func main() {
 
 					generator.SelectWave(v.ControlValues.Selector.SelectedIndex, t.Osc)
 				}
-				if t.Type == generator.Noize {
-					if t.Osc.Osc.Amplitude != 0.0 {
-						t.Osc.Osc.Amplitude = *v.ControlValues.Noize / 1000
-					}
+				//TODO:move to dsp
+				// if t.Type == generator.Noize {
+				// 	t.Osc.Osc.Amplitude = 0.0
+				// 	// if t.Osc.Osc.Amplitude != 0.0 {
+				// 	// 	t.Osc.Osc.Amplitude -= *v.ControlValues.Noize / 1000
+				// 	// }
 
-				}
+				// }
 
 			}
 			// for _, n := range v.Noize {

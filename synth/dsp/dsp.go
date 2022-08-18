@@ -50,8 +50,7 @@ func RunDSP(dspConf DspConf, voices []*generator.Voice) {
 
 }
 func fillBuffers(voices []*generator.Voice) {
-	// oscs := []generator.Osc{*voice.Osc[0], *voice.Noize[0]}
-	//oscs := []*generator.Osc{}
+
 	for _, v := range voices {
 		for _, o := range v.Tones {
 			if err := o.Osc.Osc.Fill(o.Osc.Buf); err != nil {
@@ -76,8 +75,9 @@ func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 	for _, v := range voices {
 
 		oscs = append(oscs, v.Tones...)
+
 		// oscs = append(oscs, v.Noize...)
-		audioChannel = PreMix(dst, oscs)
+		audioChannel = PreMix(dst, oscs, v)
 
 		audioChannel = v.Filter.RunFilter(audioChannel, 0.0001, 44100)
 		audioChannel = post_audio.Amp(audioChannel, float32(*v.ControlValues.Vol/100))

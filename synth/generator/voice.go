@@ -32,20 +32,13 @@ func NewVoice(filter *post_audio.Filter, adsr *Adsr, lfo *Lfo, controlValues org
 
 }
 
-//TODO: decide if noize is property in TOne as it is Osc
 func (vo *Voice) RunPolly(message midi.MidiMsg) {
 
 	oscKey := findWithKey(vo.Tones, message.Key, Regular)
 	noizeKey := findWithKey(vo.Tones, message.Key, Noize)
 	oscOff := findFirstOff(vo.Tones, Regular)
 	noizeOff := findFirstOff(vo.Tones, Noize)
-	// oscOff := findFirstKeyZeroAndOff(vo.Tones, Regular)
-	// noizeOff := findFirstKeyZeroAndOff(vo.Tones, Noize)
-	// for _, v := range vo.Tones {
-	// if v.Type != Noize {
-	// println(v.ShowStatus())
-	// }
-	// }
+
 	if message.On {
 
 		if oscOff != nil && noizeOff != nil {
@@ -67,14 +60,14 @@ func (vo *Voice) RunPolly(message midi.MidiMsg) {
 
 }
 
-func findFirstKeyZeroAndOff(tones []*Tone, oscType OscType) *Tone {
-	for _, tone := range tones {
-		if tone.Key == 0 && !tone.IsOn && tone.Type == oscType {
-			return tone
-		}
-	}
-	return nil
-}
+// func findFirstKeyZeroAndOff(tones []*Tone, oscType OscType) *Tone {
+// 	for _, tone := range tones {
+// 		if tone.Key == 0 && !tone.IsOn && tone.Type == oscType {
+// 			return tone
+// 		}
+// 	}
+// 	return nil
+// }
 func findWithKey(tones []*Tone, key int, oscType OscType) *Tone {
 	for _, tone := range tones {
 		if tone.Key == key && tone.Type == oscType {

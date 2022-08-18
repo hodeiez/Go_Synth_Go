@@ -68,7 +68,7 @@ func testSelector() []string {
 
 const (
 	BufferSize = 2048
-	polyphony  = 2
+	polyphony  = 10
 )
 
 var voice1 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel1.Cut, Reso: OscPanel1.Res},
@@ -79,7 +79,8 @@ var voice1 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel1.Cut, Reso: 
 		SustainAmp:  &OscPanel1.Adsr.Sus,
 		Type:        generator.EnvelopeAdsr,
 		MinValue:    0.0,
-		MaxValue:    0.0},
+		MaxValue:    0.0,
+		StopTime:    make(chan bool, 1)},
 	&generator.Lfo{},
 	OscPanel1,
 	polyphony,
@@ -93,7 +94,8 @@ var voice2 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel2.Cut, Reso: 
 		SustainAmp:  &OscPanel2.Adsr.Sus,
 		Type:        generator.EnvelopeAdsr,
 		MinValue:    0.0,
-		MaxValue:    0.0},
+		MaxValue:    0.0,
+		StopTime:    make(chan bool, 1)},
 	&generator.Lfo{},
 	OscPanel2,
 	polyphony,
