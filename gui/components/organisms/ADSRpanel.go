@@ -14,7 +14,7 @@ type ADSRpanel struct {
 }
 
 var (
-	min = int32(0.0)
+	min = int32(0.0) //TODO:check in generator.Adsr this value to be 0
 	max = int32(100.0)
 )
 

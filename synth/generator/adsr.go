@@ -65,9 +65,9 @@ func (t *Tone) adsrAction(adsrType AdsrType, adsrAction AdsrAction, rate float64
 	}
 }
 
-//TODO: normalize values, add release ticker, fix
+//TODO: normalize values
 func (adsr Adsr) RunAdsr(t *Tone, adsrType AdsrType, gain float64) {
-	// println(*adsr.AttackTime)
+
 	attackT := RescaleToMilliSeconds(*adsr.AttackTime, 0, 100, 10)
 
 	decayT := RescaleToMilliSeconds(*adsr.DecayTime, 0, 100, 10)
@@ -92,14 +92,13 @@ func (adsr Adsr) RunAdsr(t *Tone, adsrType AdsrType, gain float64) {
 		}
 
 	} else {
-		t.adsrAction(adsrType, DecreaseAction, getRateValue(releaseT, gain), 0.0)
-		println(t.FramePos)
-		if t.FramePos >= releaseT {
 
+		if t.FramePos >= releaseT {
 			t.StopTime <- true
+		} else {
+			t.adsrAction(adsrType, DecreaseAction, getRateValue(releaseT, gain), 0.0)
 		}
-		//t.adsrAction(adsrType, DecreaseAction, getRateValue(RescaleToMilliSeconds(*adsr.ReleaseTime, 0, 100, 10), rateValue), 0.0)
-		// t.adsrAction(adsrType, DecreaseAction, rateValue, adsr.MinValue)
+
 	}
 
 }
@@ -109,46 +108,10 @@ func getSustainAmpValue(maxValue float64, sustainValue int32) float64 {
 	return maxValue * (float64(sustainValue) / sustainMax)
 }
 func getRateValue(timeScale float64, rateValue float64) float64 {
-	if timeScale == RescaleToMilliSeconds(0, 0, 100, 10) {
+	if timeScale == RescaleToMilliSeconds(0, 0, 100, 10) { //if time is set to 0, then rateValue is full
 		return rateValue
 	} else {
 		return rateValue / timeScale
 	}
-	/*
-		attack= 4000 => 0.0
-	*/
+
 }
-
-// func starAdsrtTimer(t *Tone, adsr *Adsr, gain float64, adsrType AdsrType) {
-// 	releaseT := RescaleToMilliSeconds(*adsr.ReleaseTime, 0, 100, 10)
-// 	ticker := time.NewTicker(time.Duration(1) * time.Millisecond)
-
-// 	for {
-// 		select {
-// 		case <-ticker.C:
-// 			t.adsrAction(adsrType, DecreaseAction, getRateValue(releaseT, gain), getSustainAmpValue(gain, *adsr.SustainAmp))
-// 		case <-t.StopTime:
-// 			ticker.Stop()
-// 			return
-// 		}
-// 	}
-
-// }
-
-//
-// func ticker() {
-// 	ticker := time.NewTicker(1 * time.Millisecond)
-// sus 100, max 100=> 100, sus 25, max 100=> 25. sus 40, max 100=> 40, sus 25, max 40=> 10 => 40*(sus/100)
-// 	go func() {
-// 		for {
-// 			select {
-// 			case <-ticker.C:
-// 				// runner(voice, parameter, controller, controlRate, actionType)
-// 			case <-voice.Quit:
-// 				ticker.Stop()
-// 				return
-// 			}
-// 		}
-// 	}()
-
-// }

@@ -13,7 +13,7 @@ type Tone struct {
 	Type     OscType
 	Gain     float64
 	FramePos float64
-	Active   bool
+	Active   bool //TODO: test if I need this property
 	StopTime chan bool
 	Vel      float64
 }
@@ -35,14 +35,12 @@ func (t *Tone) BindToOSC(message midi.MidiMsg, adsr *Adsr) {
 	t.Gain = t.Osc.Osc.Amplitude
 	t.Osc.ChangeFreq(message)
 
-	t.Vel = RescaleMidiValues(message.Vel, 0.0, 0.1) //it gets velocity value
-	// adsr.MaxValue = RescaleMidiValues(message.Vel, 0.0, 0.1) //it gets velocity value
-
 	if t.IsOn {
-		if !t.Active {
-			go startTimer(t, adsr)
-			// t.Active = true
-		}
+		t.Vel = RescaleMidiValues(message.Vel, 0.0, 0.1) //it gets velocity value
+		// if !t.Active {
+		go startTimer(t, adsr)
+		// t.Active = true
+		// }
 
 	} else {
 		// t.Active = false
@@ -51,7 +49,7 @@ func (t *Tone) BindToOSC(message midi.MidiMsg, adsr *Adsr) {
 		t.FramePos = 0.0
 
 		go startTimer(t, adsr)
-		// t.Osc.Osc.Amplitude = 0.0000
+
 	}
 }
 
