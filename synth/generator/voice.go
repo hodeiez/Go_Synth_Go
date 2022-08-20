@@ -38,7 +38,11 @@ func (vo *Voice) RunPolly(message midi.MidiMsg) {
 	noizeKey := findWithKey(vo.Tones, message.Key, Noize)
 	oscOff := findFirstOff(vo.Tones, Regular)
 	noizeOff := findFirstOff(vo.Tones, Noize)
+	// for _, tone := range vo.Tones {
 
+	// 	println(tone.ShowStatus())
+
+	// }
 	if message.On {
 
 		if oscOff != nil && noizeOff != nil {
@@ -70,7 +74,7 @@ func (vo *Voice) RunPolly(message midi.MidiMsg) {
 // }
 func findWithKey(tones []*Tone, key int, oscType OscType) *Tone {
 	for _, tone := range tones {
-		if tone.Key == key && tone.Type == oscType {
+		if tone.Key == key && tone.Type == oscType && tone.Active && tone.IsOn {
 			return tone
 		}
 	}
@@ -78,7 +82,7 @@ func findWithKey(tones []*Tone, key int, oscType OscType) *Tone {
 }
 func findFirstOff(tones []*Tone, oscType OscType) *Tone {
 	for _, tone := range tones {
-		if !tone.IsOn && tone.Type == oscType {
+		if !tone.IsOn && tone.Type == oscType && !tone.Active {
 			return tone
 		}
 	}

@@ -54,7 +54,7 @@ func oscPanel(title string, ypos int, val *OscPanelValues) *g.ChildWidget {
 			g.AlignManually(g.AlignRight, ADSRpanelInit(&val.Adsr.Att, &val.Adsr.Dec, &val.Adsr.Sus, &val.Adsr.Rel), 400, true)),
 
 		components.Knob(image.Pt(g.GetCursorPos().X+200, g.GetCursorPos().Y+ypos), val.Vol, "VOL"),
-		components.Knob(image.Pt(g.GetCursorPos().X+270, g.GetCursorPos().Y+ypos), val.Pitch, "PITCH").SetMinMax(220, 680),
+		components.Knob(image.Pt(g.GetCursorPos().X+270, g.GetCursorPos().Y+ypos), val.Pitch, "PITCH").SetMinMax(220, 660),
 		components.Knob(image.Pt(g.GetCursorPos().X+340, g.GetCursorPos().Y+ypos), val.Cut, "CUT").SetMinMax(1, 5000),
 		components.Knob(image.Pt(g.GetCursorPos().X+410, g.GetCursorPos().Y+ypos), val.Res, "RES").SetMinMax(1, 1000),
 		components.Knob(image.Pt(g.GetCursorPos().X+200, g.GetCursorPos().Y+100+ypos), val.Pwm, "PWM"),

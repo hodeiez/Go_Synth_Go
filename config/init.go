@@ -68,7 +68,7 @@ func testSelector() []string {
 
 const (
 	BufferSize = 2048
-	polyphony  = 10
+	polyphony  = 40
 )
 
 var voice1 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel1.Cut, Reso: OscPanel1.Res},

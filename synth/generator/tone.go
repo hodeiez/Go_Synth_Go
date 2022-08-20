@@ -13,7 +13,7 @@ type Tone struct {
 	Type     OscType
 	Gain     float64
 	FramePos float64
-	Active   bool //TODO: test if I need this property
+	Active   bool
 	StopTime chan bool
 	Vel      float64
 }
@@ -38,18 +38,18 @@ func (t *Tone) BindToOSC(message midi.MidiMsg, adsr *Adsr) {
 	if t.IsOn {
 		t.Vel = RescaleMidiValues(message.Vel, 0.0, 0.1) //it gets velocity value
 		// if !t.Active {
+		t.Active = true
 		go startTimer(t, adsr)
-		// t.Active = true
 		// }
 
 	} else {
 		// t.Active = false
-
+		// if t.Active {
 		t.StopTime <- true
 		t.FramePos = 0.0
 
 		go startTimer(t, adsr)
-
+		// }
 	}
 }
 
@@ -79,6 +79,8 @@ func startTimer(t *Tone, adsr *Adsr) {
 		case <-ticker.C:
 			runOnTime(t, adsr)
 		case <-t.StopTime:
+			t.FramePos = 0.0
+			// t.Osc.Osc.Amplitude = 0.0
 			ticker.Stop()
 			return
 		}
