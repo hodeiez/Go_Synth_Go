@@ -10,9 +10,9 @@ require (
 
 require github.com/AllenDang/giu v0.6.2
 
-//replace github.com/go-audio/generator => github.com/hodeiez/generator v1.0.0 //I use my fork
+replace github.com/go-audio/generator => github.com/hodeiez/generator v1.0.1 //I use my fork
 
-replace github.com/go-audio/generator => C:\Users\hodei\Documents\GOLANG\goaudio-generator\generator //I use my fork github.com/hodeiez/generator
+// replace github.com/go-audio/generator => C:\Users\hodei\Documents\GOLANG\goaudio-generator\generator //I use my fork github.com/hodeiez/generator
 
 require (
 	github.com/AllenDang/go-findfont v0.0.0-20200702051237-9f180485aeb8 // indirect
