@@ -77,15 +77,17 @@ func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 		oscs = append(oscs, v.Tones...)
 
 		// oscs = append(oscs, v.Noize...)
+		//TODO:refactor PREMIX, to BUFFER MIX, and do inside all the channel separation
+		// audioChannel = PreMix(dst, oscs, v)
+		//these has to go inside premix,
 		audioChannel = PreMix(dst, oscs, v)
-
 		audioChannel = v.Filter.RunFilter(audioChannel, 0.0001, 44100)
 		audioChannel = post_audio.Amp(audioChannel, float32(*v.ControlValues.Vol/100))
 		audioChannels = append(audioChannels, audioChannel)
-
 	}
 	for _, a := range audioChannels {
 		for i, _ := range a {
+
 			dst[i] += a[i]
 		}
 	}
