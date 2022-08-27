@@ -40,7 +40,6 @@ func (t *Tone) decreaseAmp(amp float64, minValue float64) {
 	}
 }
 func (t *Tone) sustainAmp(amp float64) {
-	// println(amp)
 	t.Osc.Osc.Amplitude = amp
 }
 
@@ -104,46 +103,6 @@ func (adsr Adsr) RunAdsr(t *Tone, adsrType AdsrType, gain float64) {
 	}
 
 }
-
-// //TODO: normalize values
-// func (adsr Adsr) RunAdsr(t *Tone, adsrType AdsrType, gain float64) {
-
-// 	attackT := RescaleToMilliSeconds(*adsr.AttackTime, 0, 100, 10)
-
-// 	decayT := RescaleToMilliSeconds(*adsr.DecayTime, 0, 100, 10)
-// 	releaseT := RescaleToMilliSeconds(*adsr.ReleaseTime, 0, 100, 10)
-
-// 	if t.IsOn {
-
-// 		if attackT == 0.0 && t.FramePos < tenMsconds {
-
-// 			t.adsrAction(adsrType, SustainAction, 0.0, gain)
-// 		}
-// 		if t.FramePos <= attackT {
-
-// 			t.adsrAction(adsrType, IncreaseAction, getRateValue(attackT, gain), gain)
-
-// 		} else if t.FramePos >= attackT && t.FramePos < attackT+decayT {
-
-// 			t.adsrAction(adsrType, DecreaseAction, getRateValue(decayT, gain), getSustainAmpValue(gain, *adsr.SustainAmp))
-// 		} else if t.FramePos >= attackT+decayT {
-
-// 			t.adsrAction(adsrType, SustainAction, 0.0, getSustainAmpValue(gain, *adsr.SustainAmp))
-// 		}
-
-// 	} else {
-
-// 		if t.FramePos >= releaseT {
-// 			t.FramePos = 0.0
-// 			// t.Vel = 0.0
-// 			t.StopTime <- true
-// 		} else {
-// 			t.adsrAction(adsrType, DecreaseAction, getRateValue(releaseT, gain), 0.0)
-// 		}
-
-// 	}
-
-// }
 
 func getSustainAmpValue(maxValue float64, sustainValue int32) float64 {
 	sustainMax := 100.00

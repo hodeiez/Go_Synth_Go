@@ -37,33 +37,51 @@ func Lowpass(input []float32, freq float64, delay float32, sr float64, resoVal f
 	var in1, in2, in3, in4, out1, out2, out3, out4 float32
 	in1, in2, in3, in4, out1, out2, out3, out4 = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 	output := make([]float32, len(input))
-	copy(output, input)
+	// copy(output, input)
 
-	newF := freq / 5000
-	newR := float32(resoVal / 1000)
+	newF := float32((freq-0)*(1-0)/5000 + 0) //out 0-1
+	// newF := freq / 5000
+	// newF := freq / 5000
+
+	newR := float32((resoVal-0)*(4-0)/1000 + 0) //out 0-4
+	// newR := float32(resoVal / 1000)
+
 	f := float32(newF * 1.16)
+	// f := float32(math.Sin(float64(math.Pi*newF)) * 2)
+	// f := float32(newF*0.1) * 1.16
+	// k := newR * (1 - 0.15*f*f)
 	fb := newR * (1 - 0.15*f*f)
+	// fb := float32(2*math.Sin(float64(k)*math.Pi/2) - 1)
+	magik := float32(0.3)
+	magik2 := float32(0.35013)
 
 	for i := range output {
-		input[i] -= out4 * fb
-		input[i] *= 0.85013 * (f * f) * (f * f)
-		out1 = input[i] + 0.3*in1 + (1-f)*out1
-		in1 = input[i]
-		out2 = out1 + 0.3*in2 + (1-f)*out2
-		in2 = out1
-		out3 = out2 + 0.3*in3 + (1-f)*out3
-		in3 = out2
-		out4 = out3 + 0.3*in4 + (1-f)*out4
-		in4 = out3
-		// out4 *= (1 - f)
-		output[i] = out4
 
+		input[i] -= (out4 * fb)
+		input[i] *= (magik2 * (f * f) * (f * f)) //0.85013 * (f * f) * (f * f)
+
+		in1 = input[i]
+		out1 = (input[i]+magik)*in1 + (1-f)*out1
+		in2 = out1 - in1
+		out2 = (out1 + magik*in2) + (1-f)*out2
+		in3 = out2 - in2
+		out3 = (out2 + magik*in3) + (1-f)*out3
+		in4 = out3 - in3
+		out4 = (out3 + magik*in4) + (1-f)*out4
+
+		// out4 *= (1 - f)
+		// output[i] = input[i] - out4 - out3 - out2 - out1
+		// output[i] = (out4 + magik*lastOut) + output[i]
+		// lastOut = out4
+		output[i] = out4
+		// output[i] = 3.0 * (out3 - out4)
+		// output = Lowpass3(input, 4400, 0.00000001, float32(sr))
 	}
 
 	return output
 }
 
-// func Lowpass(input []float32, freq float64, delay float32, sr float64, resoVal float64) []float32 {
+// func Lowpass2(input []float32, freq float64, delay float32, sr float64, resoVal float64) []float32 {
 // 	output := make([]float32, len(input))
 // 	copy(output, input)
 // 	q := float32(resoVal) / 100
@@ -87,17 +105,17 @@ func Bandpass(input []float32, freq float64, delay float32, sr float64, q float6
 	return Lowpass(Highpass(input, freq-q, delay, sr), freq, delay, sr, 100)
 }
 
-// func Lowpass(input []float64, freq, delay, sr float64) []float64 {
-// 	output := make([]float64, len(input))
-// 	copy(output, input)
+func Lowpass3(input []float32, freq float64, delay, sr float32) []float32 {
+	output := make([]float32, len(input))
+	copy(output, input)
 
-// 	costh := 2. - math.Cos((tau*freq)/sr)
-// 	coef := math.Sqrt(costh*costh-1.) - costh
+	costh := 2. - float32(math.Cos(float64(tau*freq)))/sr
+	coef := float32(math.Sqrt(float64(costh*costh-1.))) - costh
 
-// 	for i, a := range output {
-// 		output[i] = a*(1+coef) - delay*coef
-// 		delay = output[i]
-// 	}
+	for i, a := range output {
+		output[i] = a*(1+coef) - delay*coef
+		delay = output[i]
+	}
 
-// 	return output
-// }
+	return output
+}

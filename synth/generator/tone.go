@@ -36,7 +36,7 @@ func (t *Tone) BindToOSC(message midi.MidiMsg, adsr *Adsr) {
 	t.Osc.ChangeFreq(message)
 
 	if t.IsOn {
-		t.Vel = RescaleMidiValues(message.Vel, 0.0, 0.1) //it gets velocity value
+		t.Vel = RescaleMidiValues(message.Vel, 0.0, OscMaxAmp) //it gets velocity value
 		// if !t.Active {
 		t.Active = true
 		go startTimer(t, adsr)

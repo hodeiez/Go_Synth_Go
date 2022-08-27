@@ -25,7 +25,7 @@ func RunDSP(dspConf DspConf, voices []*generator.Voice) {
 	defer portaudio.Terminate()
 	out := make([]float32, dspConf.BufferSize)
 
-	stream, err := portaudio.OpenDefaultStream(0, 2, 44100, len(out), &out)
+	stream, err := portaudio.OpenDefaultStream(0, 2, 48000, len(out), &out)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -71,7 +71,7 @@ func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 	for _, v := range voices {
 
 		audioChannel = PreMix(dst, v.Tones, v)
-		audioChannel = v.Filter.RunFilter(audioChannel, 0.0001, 44100)
+		audioChannel = v.Filter.RunFilter(audioChannel, 0.0001, 48000)
 		audioChannel = post_audio.Amp(audioChannel, float32(*v.ControlValues.Vol/100))
 		audioChannels = append(audioChannels, audioChannel)
 

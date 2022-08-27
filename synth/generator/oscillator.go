@@ -25,6 +25,9 @@ const (
 	Noize
 	None
 )
+const (
+	OscMaxAmp = 0.01
+)
 
 type MyWaveType int64
 
@@ -55,11 +58,12 @@ func NoiseOsc(bufferSize int) Osc {
 
 	buf := &audio.FloatBuffer{
 		Data:   make([]float64, bufferSize),
-		Format: audio.FormatStereo44100,
+		Format: audio.FormatStereo48000,
 	}
 
 	osc := generator.NewOsc(generator.WaveNoise, 440.0, buf.Format.SampleRate)
 	osc.Amplitude = 0.0
+
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, os.Kill)
 	println("noize running")
@@ -71,7 +75,7 @@ func Oscillator(bufferSize int) Osc {
 
 	buf := &audio.FloatBuffer{
 		Data:   make([]float64, bufferSize),
-		Format: audio.FormatStereo44100,
+		Format: audio.FormatStereo48000,
 	}
 	//***************************
 
