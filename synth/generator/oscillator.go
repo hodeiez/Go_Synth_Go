@@ -26,7 +26,7 @@ const (
 	None
 )
 const (
-	OscMaxAmp = 0.01
+	OscMaxAmp = 0.03
 )
 
 type MyWaveType int64
@@ -79,10 +79,12 @@ func Oscillator(bufferSize int) Osc {
 	}
 	//***************************
 
-	currentNote := 440.0
+	currentNote := 40.0
 	osc := generator.NewOsc(generator.WaveSaw, currentNote, buf.Format.SampleRate)
+
 	osc.Amplitude = 0.0
-	osc.Freq = 440.0
+	// osc.Freq = 440.0
+
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, os.Kill)
 

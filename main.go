@@ -23,28 +23,17 @@ func main() {
 			for _, t := range v.Tones {
 
 				if t.Type == generator.Regular {
-
 					go t.SendPitch(pitcChan)
 					pitcChan <- *v.ControlValues.Pitch
 					t.Osc.SetBaseFreq(*v.ControlValues.Pitch)
 
 					generator.SelectWave(v.ControlValues.Selector.SelectedIndex, t.Osc)
-				}
-				//TODO:move to dsp
-				// if t.Type == generator.Noize {
-				// 	t.Osc.Osc.Amplitude = 0.0
-				// 	// if t.Osc.Osc.Amplitude != 0.0 {
-				// 	// 	t.Osc.Osc.Amplitude -= *v.ControlValues.Noize / 1000
-				// 	// }
+					*v.Lfo.Rate = *v.ControlValues.LfoR
 
-				// }
+				}
 
 			}
-			// for _, n := range v.Noize {
 
-			// 	//n.SetBaseFreq(*v.ControlValues.Pitch * 10)
-			// 	n.Osc.Osc.Amplitude = *v.ControlValues.Noize / 1000
-			// }
 		}
 
 		select {

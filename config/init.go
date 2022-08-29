@@ -81,7 +81,8 @@ var voice1 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel1.Cut, Reso: 
 		MinValue:    0.0,
 		MaxValue:    0.0,
 		StopTime:    make(chan bool, 1)},
-	&generator.Lfo{},
+	generator.NewLFO(BufferSize, OscPanel1.LfoR),
+	// &generator.Lfo{generator.NewLFO(BufferSize)},
 	OscPanel1,
 	polyphony,
 	BufferSize)
@@ -96,7 +97,8 @@ var voice2 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel2.Cut, Reso: 
 		MinValue:    0.0,
 		MaxValue:    0.0,
 		StopTime:    make(chan bool, 1)},
-	&generator.Lfo{},
+	generator.NewLFO(BufferSize, OscPanel1.LfoR),
+	// &generator.Lfo{},
 	OscPanel2,
 	polyphony,
 	BufferSize)

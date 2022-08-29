@@ -62,7 +62,7 @@ func fillBuffers(voices []*generator.Voice) {
 
 }
 
-//TODO: abstract channels to its own object and methods and fix mixing
+//TODO: fix mixing
 func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 
 	var audioChannels [][]float32
@@ -70,9 +70,9 @@ func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 
 	for _, v := range voices {
 
-		audioChannel = PreMix(dst, v.Tones, v)
-		audioChannel = v.Filter.RunFilter(audioChannel, 0.0001, 48000)
-		audioChannel = post_audio.Amp(audioChannel, float32(*v.ControlValues.Vol/100))
+		premix := PreMix(dst, v.Tones, v)
+		filtered := v.Filter.RunFilter(premix, 0.0001, 48000, v.Tones[0].Osc.Osc.Fs)
+		audioChannel = post_audio.Amp(filtered, float32(*v.ControlValues.Vol/100))
 		audioChannels = append(audioChannels, audioChannel)
 
 	}
