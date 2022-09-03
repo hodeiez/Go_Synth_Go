@@ -67,7 +67,7 @@ func testSelector() []string {
 }
 
 const (
-	BufferSize = 2048
+	BufferSize = 2048 //
 	polyphony  = 40
 )
 

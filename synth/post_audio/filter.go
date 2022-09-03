@@ -8,6 +8,14 @@ type Filter struct {
 	Cutoff *float64
 	Reso   *float64
 }
+type FilterType int64
+
+const (
+	LP FilterType = iota
+	HP
+	BP
+	WTF
+)
 
 const tau = (2 * math.Pi)
 
@@ -27,81 +35,87 @@ func Highpass(fs []float32, freq float64, delay float32, sr float64) []float32 {
 	return output
 }
 func (filter Filter) RunFilter(input []float32, delay float32, sr float64, fs int) []float32 {
-
-	return Lowpass4(input, *filter.Cutoff, delay, sr, *filter.Reso, fs)
-
+	// oversamped := oversampling(input, 2000, delay, sr*2, 80, fs)
+	// filtered := Lowpass4(oversamped, *filter.Cutoff, delay, sr*2, *filter.Reso, fs, LP)
+	// return downSamp(filtered)
+	return Lowpass4(input, *filter.Cutoff, delay, sr, *filter.Reso, fs, LP)
+	// return Lowpass4(input, 3230, delay, sr, 0, fs, BP)
+	//return Lowpass3(input, *filter.Cutoff, 0.1, float32(sr))
+	//6000 380
 }
 
-//TODO: fix calculations
-//MOOG FILTER
-func Lowpass(input []float32, freq float64, delay float32, sr float64, resoVal float64, fs int) []float32 {
-	var in1, in2, in3, in4, out1, out2, out3, out4 float32
-	in1, in2, in3, in4, out1, out2, out3, out4 = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-	output := make([]float32, len(input))
-	// copy(output, input)
-	// (maxAllowed - minAllowed) * (unscaledNum - min) / (max - min) + minAllowed;
-	// newF := float32((freq-0)*(1-0)/5000 + 0) //out 0-1
-	newF := float32((freq/float64(fs)/float64(math.Pi*2)-0)*(1-0)/(5000.00/float64(fs)/float64(math.Pi*2)) + 0) //out 0-1
-	// newF := freq / 5000
-	// newF := freq / 5000
+func Lowpass4(input []float32, freq float64, delay float32, sr float64, resoVal float64, fs int, filterType FilterType) []float32 {
 
-	newR := float32((resoVal-0)*(4-0)/1000 + 0) //out 0-4
-	// newR := float32(resoVal / 1000)
+	freqC := 2.0 * math.Sin(math.Pi*freq/float64(fs))
+	cutoff := float32(freqC)
 
-	f := float32(newF * 1.16)
-	// f := float32(math.Sin(float64(math.Pi*newF)) * 2)
-	// f := float32(newF*0.1) * 1.16
-	// k := newR * (1 - 0.15*f*f)
-	fb := newR * (1 - 0.15*f*f)
-	// fb := float32(2*math.Sin(float64(k)*math.Pi/2) - 1)
-	magik := float32(0.3)
-	magik2 := float32(0.35013)
-
-	// println(newF)
-	for i := range output {
-
-		input[i] -= (out4 * fb) + in4
-		input[i] *= (magik2 * (f * f) * (f * f)) //0.85013 * (f * f) * (f * f)
-
-		in1 = input[i]
-		out1 = (output[i]+magik)*in1 + (1-f)*out1
-
-		in2 = out1 - in1
-		out2 = (out1 + magik*in2) + (1-f)*out2
-		in3 = out2 - in2
-		out3 = (out2 + magik*in3) + (1-f)*out3
-		in4 = out3 - in3
-		out4 = (out3 + magik*in4) + (1-f)*out4
-
-		// out4 *= (1 - f)
-		// output[i] = input[i] - out4 - out3 - out2 - out1
-		// output[i] = (out4 + magik*lastOut) + output[i]
-		// lastOut = out4
-
-		output[i] = out4
-		// output[i] = 3.0 * (out3 - out4)
-		// output = Lowpass3(input, 4400, 0.00000001, float32(sr))
-
-	}
-	return output
-}
-func Lowpass4(input []float32, freq float64, delay float32, sr float64, resoVal float64, fs int) []float32 {
-	cutoff := float32((freq-0)*(0.99+0.1)/10 + 0.1)
 	resonance := float32((resoVal-0)*(1-0)/1000 + 0)
 	var buf0, buf1, buf2, buf3 float32
 	buf0, buf1, buf2, buf3 = 0.0, 0.0, 0.0, 0.0
-	output := make([]float32, len(input))
+	output := make([]float32, len(input)) //EZ AHAZTU
+	// feedbackAmount := resonance * (1 - (0.15 * cutoff * 1.15 * cutoff * 1.15)) //resonance/(1.0-cutoff)
 	feedbackAmount := resonance + resonance/(1.0-cutoff)
+
 	for i := range input {
 		buf0 += cutoff * (input[i] - buf0 + feedbackAmount*(buf0-buf1))
 		buf1 += cutoff * (buf0 - buf1)
 		buf2 += cutoff * (buf1 - buf2)
 		buf3 += cutoff * (buf2 - buf3)
-		output[i] = buf3
+
+		switch filterType {
+		case LP:
+			output[i] = buf3
+		case HP:
+			output[i] = input[i] - buf3
+		case BP:
+			output[i] = buf0 - buf3
+		case WTF:
+			output[i] = buf0 - input[i] // - buf3/2 + buf0/2
+		}
+
 		//buf3 lp, input-buf3 hp, buf0-buf3 bandpass
+	}
+
+	return output
+}
+
+func oversampling(input []float32, freq float64, delay float32, sr float64, reso float64, fs int) []float32 {
+	oversamp := make([]float32, 2*len(input))
+	for a := 0; a < len(input)-1; a++ {
+		oversamp[a] = input[a]
+		oversamp[a+1] = input[a]
+	}
+	// Lowpass4(oversamped, *filter.Cutoff, delay, sr, *filter.Reso, fs)
+	return Lowpass4(oversamp, freq, delay, sr, reso, fs, BP)
+	// return oversamp
+}
+func downSamp(oversampOut []float32) []float32 {
+	output := make([]float32, len(oversampOut)/2)
+
+	for b := 0; b < (len(oversampOut)/2)-1; b++ {
+		output[b] = oversampOut[b]
+		output[b+1] = oversampOut[b+2]
 	}
 	return output
 }
+
+// func oversampling(input []float32) []float32 {
+// 	oversamp := make([]float32, 2*len(input))
+// 	for a := 0; a < len(input)-1; a++ {
+// 		oversamp[a] = input[a]
+// 		oversamp[a+1] = input[a]
+// 	}
+// 	return oversamp
+// }
+// func downSamp(oversampOut []float32) []float32 {
+// 	output := make([]float32, len(oversampOut)/2)
+
+// 	for b := 0; b < (len(oversampOut)/2)-1; b++ {
+// 		output[b] = oversampOut[b]
+// 		output[b+1] = oversampOut[b+2]
+// 	}
+// 	return output
+// }
 
 // func Lowpass2(input []float32, freq float64, delay float32, sr float64, resoVal float64) []float32 {
 // 	output := make([]float32, len(input))
