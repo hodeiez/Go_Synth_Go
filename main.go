@@ -13,13 +13,16 @@ func main() {
 	///main vars
 	msg := make(chan midi.MidiMsg)
 	go midi.RunMidi(msg)
-	go gui.RunGUI(organism.SynthValues{Osc1: &config.OscPanel1, Osc2: &config.OscPanel2})
 	go dsp.RunDSP(dsp.DspConf{BufferSize: config.BufferSize}, config.Voices)
+	go RunSynth(config.Voices, msg)
+	gui.RunGUI(organism.SynthValues{Osc1: &config.OscPanel1, Osc2: &config.OscPanel2})
 
+}
+func RunSynth(voices []*generator.Voice, msg chan midi.MidiMsg) {
 	pitcChan := make(chan float64)
 	for {
 
-		for _, v := range config.Voices {
+		for _, v := range voices {
 			for _, t := range v.Tones {
 
 				if t.Type == generator.Regular {
@@ -45,7 +48,6 @@ func main() {
 
 		}
 
-		// fmt.Println(<-msg)
-
 	}
+
 }
