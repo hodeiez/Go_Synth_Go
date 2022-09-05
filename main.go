@@ -19,7 +19,7 @@ func main() {
 
 }
 func RunSynth(voices []*generator.Voice, msg chan midi.MidiMsg) {
-	pitcChan := make(chan float64)
+	pitcChan := make(chan float32)
 	for {
 
 		for _, v := range voices {
@@ -27,11 +27,11 @@ func RunSynth(voices []*generator.Voice, msg chan midi.MidiMsg) {
 
 				if t.Type == generator.Regular {
 					go t.SendPitch(pitcChan)
-					pitcChan <- *v.ControlValues.Pitch
-					t.Osc.SetBaseFreq(*v.ControlValues.Pitch)
+					pitcChan <- float32(*v.ControlValues.Pitch)
+					t.Osc.SetBaseFreq(float32(*v.ControlValues.Pitch))
 
 					generator.SelectWave(v.ControlValues.Selector.SelectedIndex, t.Osc)
-					*v.Lfo.Rate = *v.ControlValues.LfoR
+					// *v.Lfo.Rate = *v.ControlValues.LfoR
 
 				}
 

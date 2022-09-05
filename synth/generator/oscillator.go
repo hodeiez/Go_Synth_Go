@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"hodei/gosynthgo/synth/library"
 	"hodei/gosynthgo/synth/midi"
 	"log"
 	"math"
@@ -9,14 +10,14 @@ import (
 	"os/signal"
 
 	"github.com/go-audio/audio"
-	"github.com/go-audio/generator"
+	// "github.com/go-audio/generator"
 )
 
 type Osc struct {
-	// gainControl float64
-	Osc      *generator.Osc
-	Buf      *audio.FloatBuffer
-	BaseFreq float64
+	// gainControl float32
+	Osc      *library.Osc
+	Buf      *audio.Float32Buffer
+	BaseFreq float32
 }
 type OscType int64
 
@@ -56,12 +57,12 @@ func (s MyWaveType) String() string {
 }
 func NoiseOsc(bufferSize int) Osc {
 
-	buf := &audio.FloatBuffer{
-		Data:   make([]float64, bufferSize),
+	buf := &audio.Float32Buffer{
+		Data:   make([]float32, bufferSize),
 		Format: audio.FormatStereo48000,
 	}
 
-	osc := generator.NewOsc(generator.WaveNoise, 440.0, buf.Format.SampleRate)
+	osc := library.NewOsc(library.WaveNoise, 440.0, buf.Format.SampleRate)
 	osc.Amplitude = 0.0
 
 	sig := make(chan os.Signal, 1)
@@ -73,14 +74,14 @@ func NoiseOsc(bufferSize int) Osc {
 func Oscillator(bufferSize int) Osc {
 	// this has to go to a preconf**************
 
-	buf := &audio.FloatBuffer{
-		Data:   make([]float64, bufferSize),
+	buf := &audio.Float32Buffer{
+		Data:   make([]float32, bufferSize),
 		Format: audio.FormatStereo48000,
 	}
 	//***************************
 
-	currentNote := 40.0
-	osc := generator.NewOsc(generator.WaveSaw, currentNote, buf.Format.SampleRate)
+	currentNote := float32(40.0)
+	osc := library.NewOsc(library.WaveSaw, currentNote, buf.Format.SampleRate)
 
 	osc.Amplitude = 0.0
 	// osc.Freq = 440.0
@@ -92,17 +93,17 @@ func Oscillator(bufferSize int) Osc {
 	return Osc{osc, buf, 440.0}
 
 }
-func (osc *Osc) SetBaseFreq(freq float64) {
+func (osc *Osc) SetBaseFreq(freq float32) {
 	osc.BaseFreq = freq
 }
 func (osc *Osc) ChangeFreq(midimsg midi.MidiMsg) {
 
-	NoteToPitch := (osc.BaseFreq / 32) * (math.Pow(2, ((float64(midimsg.Key) - 9) / 12)))
+	NoteToPitch := (osc.BaseFreq / 32) * (float32(math.Pow(float64(2), float64((float32(midimsg.Key)-9)/12))))
 
 	osc.Osc.SetFreq(NoteToPitch)
 
 }
-func (osc *Osc) PitchShift(val float64) {
+func (osc *Osc) PitchShift(val float32) {
 	temp := osc.Osc.Freq + val
 	osc.Osc.Freq = temp
 
@@ -112,13 +113,13 @@ func SelectWave(waveName int, o Osc) {
 
 	switch waveName {
 	case 0:
-		o.Osc.Shape = generator.WaveType(generator.WaveSaw)
+		o.Osc.Shape = library.WaveType(library.WaveSaw)
 	case 1:
-		o.Osc.Shape = generator.WaveType(generator.WaveTriangle)
+		o.Osc.Shape = library.WaveType(library.WaveTriangle)
 	case 2:
-		o.Osc.Shape = generator.WaveType(generator.WaveSqr)
+		o.Osc.Shape = library.WaveType(library.WaveSqr)
 	case 3:
-		o.Osc.Shape = generator.WaveType(generator.WaveSine)
+		o.Osc.Shape = library.WaveType(library.WaveSine)
 
 	}
 

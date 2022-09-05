@@ -9,8 +9,8 @@ type Adsr struct {
 	DecayTime   *int32
 	SustainAmp  *int32
 	ReleaseTime *int32
-	MinValue    float64
-	MaxValue    float64
+	MinValue    float32
+	MaxValue    float32
 	Type        AdsrType
 	StopTime    chan bool
 }
@@ -28,22 +28,22 @@ const (
 	PitchAdsr
 )
 
-func (t *Tone) increaseAmp(amp float64, maxValue float64) {
+func (t *Tone) increaseAmp(amp float32, maxValue float32) {
 	if t.Osc.Osc.Amplitude < maxValue {
 
 		t.Osc.Osc.Amplitude += amp
 	}
 }
-func (t *Tone) decreaseAmp(amp float64, minValue float64) {
+func (t *Tone) decreaseAmp(amp float32, minValue float32) {
 	if t.Osc.Osc.Amplitude > minValue {
 		t.Osc.Osc.Amplitude -= amp
 	}
 }
-func (t *Tone) sustainAmp(amp float64) {
+func (t *Tone) sustainAmp(amp float32) {
 	t.Osc.Osc.Amplitude = amp
 }
 
-func (t *Tone) adsrAction(adsrType AdsrType, adsrAction AdsrAction, rate float64, controlValue float64) {
+func (t *Tone) adsrAction(adsrType AdsrType, adsrAction AdsrAction, rate float32, controlValue float32) {
 	switch adsrAction {
 	case IncreaseAction:
 		switch adsrType {
@@ -65,7 +65,7 @@ func (t *Tone) adsrAction(adsrType AdsrType, adsrAction AdsrAction, rate float64
 }
 
 //TODO: normalize values
-func (adsr Adsr) RunAdsr(t *Tone, adsrType AdsrType, gain float64) {
+func (adsr Adsr) RunAdsr(t *Tone, adsrType AdsrType, gain float32) {
 
 	attackT := RescaleToMilliSeconds(*adsr.AttackTime, 0, 100, 10)
 
@@ -104,11 +104,11 @@ func (adsr Adsr) RunAdsr(t *Tone, adsrType AdsrType, gain float64) {
 
 }
 
-func getSustainAmpValue(maxValue float64, sustainValue int32) float64 {
-	sustainMax := 100.00
-	return maxValue * (float64(sustainValue) / sustainMax)
+func getSustainAmpValue(maxValue float32, sustainValue int32) float32 {
+	sustainMax := float32(100.00)
+	return maxValue * (float32(sustainValue) / sustainMax)
 }
-func getRateValue(timeScale float64, rateValue float64) float64 {
+func getRateValue(timeScale float32, rateValue float32) float32 {
 	if timeScale == RescaleToMilliSeconds(0, 0, 100, 10) { //if time is set to 0, then rateValue is full
 		return rateValue
 	} else {

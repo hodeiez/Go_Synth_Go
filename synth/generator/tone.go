@@ -11,11 +11,11 @@ type Tone struct {
 	IsOn     bool
 	Osc      Osc
 	Type     OscType
-	Gain     float64
-	FramePos float64
+	Gain     float32
+	FramePos float32
 	Active   bool
 	StopTime chan bool
-	Vel      float64
+	Vel      float32
 }
 
 func NewTone(buffer int, oscType OscType) Tone {
@@ -53,14 +53,14 @@ func (t *Tone) BindToOSC(message midi.MidiMsg, adsr *Adsr) {
 	}
 }
 
-func (t *Tone) SetPitch(pitch float64, freq float64) {
+func (t *Tone) SetPitch(pitch float32, freq float32) {
 
 	if t.Osc.BaseFreq != pitch {
 		t.Osc.Osc.SetFreq((pitch - t.Osc.BaseFreq) + freq)
 	}
 
 }
-func (t Tone) SendPitch(pitchTest chan float64) {
+func (t Tone) SendPitch(pitchTest chan float32) {
 
 	t.SetPitch(<-pitchTest, t.Osc.Osc.Freq)
 
