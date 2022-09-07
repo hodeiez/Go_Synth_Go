@@ -5,7 +5,7 @@ import (
 )
 
 //TODO: refactor noize volume control to its place
-func PreMix(output []float32, buffered []*generator.Tone, voice *generator.Voice) []float32 {
+func PreMix(output []float64, buffered []*generator.Tone, voice *generator.Voice) []float64 {
 
 	temp := float64(0.)
 	for n := 0; n < len(buffered[0].Osc.Buf.Data); n++ {
@@ -16,7 +16,7 @@ func PreMix(output []float32, buffered []*generator.Tone, voice *generator.Voice
 			}
 			temp += buffered[i].Osc.Buf.Data[n]
 		}
-		output[n] = float32(temp)
+		output[n] = temp
 
 	}
 	return output

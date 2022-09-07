@@ -26,7 +26,7 @@ const (
 	None
 )
 const (
-	OscMaxAmp = 0.03
+	OscMaxAmp = 0.01
 )
 
 type MyWaveType int64
@@ -79,7 +79,7 @@ func Oscillator(bufferSize int) Osc {
 	}
 	//***************************
 
-	currentNote := 40.0
+	currentNote := 440.0
 	osc := generator.NewOsc(generator.WaveSaw, currentNote, buf.Format.SampleRate)
 
 	osc.Amplitude = 0.0
@@ -98,7 +98,10 @@ func (osc *Osc) SetBaseFreq(freq float64) {
 func (osc *Osc) ChangeFreq(midimsg midi.MidiMsg) {
 
 	NoteToPitch := (osc.BaseFreq / 32) * (math.Pow(2, ((float64(midimsg.Key) - 9) / 12)))
-
+	// println(NoteToPitch)
+	// osc.Osc.PhaseOffset = NoteToPitch * 300
+	// osc.Osc.CurrentPhaseAngle = NoteToPitch * math.Pi
+	// osc.Osc.Reset()
 	osc.Osc.SetFreq(NoteToPitch)
 
 }

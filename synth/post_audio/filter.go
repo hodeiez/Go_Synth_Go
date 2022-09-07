@@ -34,7 +34,7 @@ func Highpass(fs []float32, freq float64, delay float32, sr float64) []float32 {
 
 	return output
 }
-func (filter Filter) RunFilter(input []float32, delay float32, sr float64, fs int) []float32 {
+func (filter Filter) RunFilter(input []float64, delay float32, sr float64, fs int) []float64 {
 	// oversamped := oversampling(input, 2000, delay, sr*2, 80, fs)
 	// filtered := Lowpass4(oversamped, *filter.Cutoff, delay, sr*2, *filter.Reso, fs, LP)
 	// return downSamp(filtered)
@@ -44,15 +44,15 @@ func (filter Filter) RunFilter(input []float32, delay float32, sr float64, fs in
 	//6000 380
 }
 
-func Lowpass4(input []float32, freq float64, delay float32, sr float64, resoVal float64, fs int, filterType FilterType) []float32 {
+func Lowpass4(input []float64, freq float64, delay float32, sr float64, resoVal float64, fs int, filterType FilterType) []float64 {
 
 	freqC := 2.0 * math.Sin(math.Pi*freq/float64(fs))
-	cutoff := float32(freqC)
+	cutoff := (freqC)
 
-	resonance := float32((resoVal-0)*(1-0)/1000 + 0)
-	var buf0, buf1, buf2, buf3 float32
+	resonance := ((resoVal-0)*(1-0)/1000 + 0)
+	var buf0, buf1, buf2, buf3 float64
 	buf0, buf1, buf2, buf3 = 0.0, 0.0, 0.0, 0.0
-	output := make([]float32, len(input)) //EZ AHAZTU
+	output := make([]float64, len(input)) //EZ AHAZTU
 	// feedbackAmount := resonance * (1 - (0.15 * cutoff * 1.15 * cutoff * 1.15)) //resonance/(1.0-cutoff)
 	feedbackAmount := resonance + resonance/(1.0-cutoff)
 
@@ -79,16 +79,16 @@ func Lowpass4(input []float32, freq float64, delay float32, sr float64, resoVal 
 	return output
 }
 
-func oversampling(input []float32, freq float64, delay float32, sr float64, reso float64, fs int) []float32 {
-	oversamp := make([]float32, 2*len(input))
-	for a := 0; a < len(input)-1; a++ {
-		oversamp[a] = input[a]
-		oversamp[a+1] = input[a]
-	}
-	// Lowpass4(oversamped, *filter.Cutoff, delay, sr, *filter.Reso, fs)
-	return Lowpass4(oversamp, freq, delay, sr, reso, fs, BP)
-	// return oversamp
-}
+// func oversampling(input []float32, freq float64, delay float32, sr float64, reso float64, fs int) []float32 {
+// 	oversamp := make([]float32, 2*len(input))
+// 	for a := 0; a < len(input)-1; a++ {
+// 		oversamp[a] = input[a]
+// 		oversamp[a+1] = input[a]
+// 	}
+// 	// Lowpass4(oversamped, *filter.Cutoff, delay, sr, *filter.Reso, fs)
+// 	return Lowpass4(oversamp, freq, delay, sr, reso, fs, BP)
+// 	// return oversamp
+// }
 func downSamp(oversampOut []float32) []float32 {
 	output := make([]float32, len(oversampOut)/2)
 

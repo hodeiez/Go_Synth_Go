@@ -66,16 +66,16 @@ func fillBuffers(voices []*generator.Voice) {
 //TODO: fix mixing
 func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 
-	var audioChannels [][]float32
-	buff1 := make([]float32, len(dst))
-	buff2 := make([]float32, len(dst))
+	var audioChannels [][]float64
+	buff1 := make([]float64, len(dst))
+	buff2 := make([]float64, len(dst))
 	audioChannels = append(audioChannels, buff1)
 	audioChannels = append(audioChannels, buff2)
 	for i, v := range voices {
 
 		premix := PreMix(audioChannels[i], v.Tones, v)
 		filtered := v.Filter.RunFilter(premix, 0.0001, 48000, v.Tones[0].Osc.Osc.Fs)
-		audioChannels[i] = post_audio.Amp(filtered, float32(*v.ControlValues.Vol/100))
+		audioChannels[i] = post_audio.Amp(filtered, (*v.ControlValues.Vol / 100))
 		// audioChannels = append(audioChannels, audioChannel)
 
 	}
@@ -84,7 +84,7 @@ func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 	// temp := float32(0.0)
 	for i := range dst {
 
-		dst[i] = audioChannels[0][i] + audioChannels[1][i]
+		dst[i] = float32(audioChannels[0][i]) + float32(audioChannels[1][i])
 		// dst[i] = out[i]
 
 	}
