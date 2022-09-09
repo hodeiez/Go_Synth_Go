@@ -11,9 +11,9 @@ var (
 )
 
 var (
-	vol1   = 0.0
+	vol1   = 100.0
 	pitch1 = 440.0
-	cut1   = 0.0
+	cut1   = 546.0
 	res1   = 0.0
 	pwm1   = 0.0
 	lfoR1  = 0.0
@@ -30,7 +30,7 @@ var (
 	lfoW2  = 0.0
 	noize2 = 0.0
 )
-var adsr = organism.AdsrValues{Att: 0, Dec: 0, Sus: 0, Rel: 0}
+var adsr = organism.AdsrValues{Att: 0, Dec: 0, Sus: 100, Rel: 0}
 var adsr2 = organism.AdsrValues{Att: 0, Dec: 0, Sus: 0, Rel: 0}
 var selector1 = organism.SelectorValues{TextValues: testSelector(), SelectedIndex: 0}
 var selector2 = organism.SelectorValues{TextValues: testSelector(), SelectedIndex: 0}

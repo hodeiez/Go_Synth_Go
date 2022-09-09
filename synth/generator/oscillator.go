@@ -26,7 +26,7 @@ const (
 	None
 )
 const (
-	OscMaxAmp = 0.01
+	OscMaxAmp = 0.1
 )
 
 type MyWaveType int64
@@ -98,10 +98,7 @@ func (osc *Osc) SetBaseFreq(freq float64) {
 func (osc *Osc) ChangeFreq(midimsg midi.MidiMsg) {
 
 	NoteToPitch := (osc.BaseFreq / 32) * (math.Pow(2, ((float64(midimsg.Key) - 9) / 12)))
-	// println(NoteToPitch)
-	// osc.Osc.PhaseOffset = NoteToPitch * 300
-	// osc.Osc.CurrentPhaseAngle = NoteToPitch * math.Pi
-	// osc.Osc.Reset()
+
 	osc.Osc.SetFreq(NoteToPitch)
 
 }
