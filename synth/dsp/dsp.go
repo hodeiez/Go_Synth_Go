@@ -3,15 +3,18 @@ package dsp
 import (
 	"hodei/gosynthgo/synth/generator"
 	"hodei/gosynthgo/synth/post_audio"
+	"time"
 
 	"log"
 
 	"github.com/gordonklaus/portaudio"
 )
 
-//** for now we run just one oscillator
 type DspConf struct {
 	BufferSize int
+}
+type MySound struct {
+	*portaudio.Stream
 }
 
 func RunDSP(dspConf DspConf, voices []*generator.Voice) {
@@ -24,8 +27,14 @@ func RunDSP(dspConf DspConf, voices []*generator.Voice) {
 	}
 	defer portaudio.Terminate()
 	out := make([]float32, dspConf.BufferSize)
+	device, err := portaudio.DefaultOutputDevice()
+	deviceO := portaudio.StreamDeviceParameters{Device: device, Channels: 1, Latency: time.Duration(000000000)}
+	// deviceI := portaudio.StreamDeviceParameters{Device: device, Channels: 0, Latency: time.Duration(1000000000)}
+	params := portaudio.StreamParameters{Output: deviceO, SampleRate: 48000, FramesPerBuffer: dspConf.BufferSize, Flags: portaudio.ClipOff}
 
-	stream, err := portaudio.OpenDefaultStream(0, 2, 48000, len(out), &out)
+	stream, err := portaudio.OpenStream(params, &out)
+
+	//  stream, err := portaudio.OpenDefaultStream(0, 1, 48000, len(out), &out)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,7 +73,7 @@ func fillBuffers(voices []*generator.Voice) {
 }
 
 //TODO: fix mixing
-func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
+func Mixing(dst []float32, src DspConf, voices []*generator.Voice) {
 
 	var audioChannels [][]float64
 	buff1 := make([]float64, len(dst))
@@ -79,47 +88,12 @@ func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
 		// audioChannels = append(audioChannels, audioChannel)
 
 	}
-	// out := make([]float32, len(dst))
 
-	// temp := float32(0.0)
 	for i := range dst {
 
 		dst[i] = float32(audioChannels[0][i]) + float32(audioChannels[1][i])
 		// dst[i] = out[i]
 
 	}
-	// dst = out
-	// for _, a := range audioChannels {
-	// 	for i := range a {
-
-	// 		dst[i] += a[i]
-	// 	}
-	// }
-
-	return dst
 
 }
-
-// func Mixing(dst []float32, src DspConf, voices []*generator.Voice) []float32 {
-
-// 	var audioChannels [][]float32
-
-// 	for _, v := range voices {
-
-// 		premix := PreMix(dst, v.Tones, v)
-// 		filtered := v.Filter.RunFilter(premix, 0.0001, 48000, v.Tones[0].Osc.Osc.Fs)
-// 		audioChannel := post_audio.Amp(filtered, float32(*v.ControlValues.Vol/100))
-// 		audioChannels = append(audioChannels, audioChannel)
-
-// 	}
-
-// 	for _, a := range audioChannels {
-// 		for i := range a {
-
-// 			dst[i] += a[i]
-// 		}
-// 	}
-
-// 	return dst
-
-// }
