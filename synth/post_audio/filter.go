@@ -36,7 +36,7 @@ func Highpass(fs []float32, freq float64, delay float32, sr float64) []float32 {
 }
 func (filter Filter) RunFilter(input []float64, delay float32, sr float64, fs int) []float64 {
 
-	return Lowpass4(input, *filter.Cutoff, delay, sr, *filter.Reso, fs, LP)
+	return Lowpass5(input, *filter.Cutoff, delay, sr, *filter.Reso, fs, LP)
 
 }
 
@@ -76,60 +76,46 @@ func Lowpass4(input []float64, freq float64, delay float32, sr float64, resoVal 
 	return output
 
 }
+
+//(maxOut - minOut) * (unscaledNum - min) / (max - min) + minOut
 func Lowpass5(input []float64, freq float64, delay float32, sr float64, resoVal float64, fs int, filterType FilterType) []float64 {
 
-	// freqC := 2.0 * math.Sin(math.Pi*freq/float64(fs))
-	// cutoff := (freq)
-	//(maxOut - minOut) * (unscaledNum - min) / (max - min) + minOut
-	cutoff := (1-0)*((freq-20)/(20000-20)) + 0
-	// cutoff := freq
-	resonance := (4-0)*((resoVal-0)/(1000-0)) + 0
-
-	var buf0, buf1, buf2, buf3 float64
-	buf0, buf1, buf2, buf3 = 0.0, 0.0, 0.0, 0.0
+	fNorm := (1-0)*(freq-20)/(6000-20) + 0
+	resonance := ((resoVal-0)*(4-0)/1000 + 0)
+	var buf0, buf1, buf2, buf3, in1, in2, in3, in4 float64
+	buf0, buf1, buf2, buf3, in1, in2, in3, in4 = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 	output := make([]float64, len(input)) //EZ AHAZTU
+	// feedbackAmount := resonance * (1 - (0.15 * cutoff * 1.15 * cutoff * 1.15)) //resonance/(1.0-cutoff)
+	// feedbackAmount := resonance + resonance/(1.0-cutoff)
 
+	f := fNorm * 1.16
+	fb := resonance * (1 - 0.15*f*f)
 	for i := range input {
-		for oversamp := 0; oversamp < 20; oversamp++ {
+		input[i] -= buf3 * fb
+		input[i] *= 0.35013 * (f * f) * (f * f)
+		buf0 = input[i] + 0.3*in1 + (1-f)*buf0
+		in1 = input[i]
+		buf1 = buf0 + 0.3*in2 + (1-f)*buf1
+		in2 = buf0
+		buf2 = buf1 + 0.3*in3 + (1-f)*buf2
+		in3 = buf1
+		buf3 = buf2 + 0.3*in4 + (1-f)*buf3
+		in4 = buf2
 
-			rez := resonance * buf3
-			if rez > 1 {
-				rez = 1
-			}
-			input[i] -= rez
-			buf0 += (input[i] - buf0) * cutoff
-			buf1 += (buf0 - buf1) * cutoff
-			buf2 += (buf1 - buf2) * cutoff
-			buf3 += (buf2 - buf3) * cutoff
-
-			switch filterType {
-			case LP:
-				output[i] = buf3
-			case HP:
-				output[i] = input[i] - buf3
-			case BP:
-				output[i] = buf0 - buf3
-			case WTF:
-				output[i] = buf0 - input[i] // - buf3/2 + buf0/2
-			}
+		switch filterType {
+		case LP:
+			output[i] = buf3
+		case HP:
+			output[i] = input[i] - buf3
+		case BP:
+			output[i] = buf0 - buf3
+		case WTF:
+			output[i] = buf0 - input[i] // - buf3/2 + buf0/2
 		}
+
+		// output[1]=input[1]
+		//buf3 lp, input-buf3 hp, buf0-buf3 bandpass
+
 	}
-
-	return output
-
-}
-
-func Lowpass3(input []float32, freq float64, delay, sr float32) []float32 {
-	output := make([]float32, len(input))
-	copy(output, input)
-
-	costh := 2. - float32(math.Cos(float64(tau*freq)))/sr
-	coef := float32(math.Sqrt(float64(costh*costh-1.))) - costh
-
-	for i, a := range output {
-		output[i] = a*(1+coef) - delay*coef
-		delay = output[i]
-	}
-
 	return output
 }

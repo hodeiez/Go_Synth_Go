@@ -17,6 +17,7 @@ type MySound struct {
 	*portaudio.Stream
 }
 
+//TODO: optimize dsp stream and use callback, move all the audio process to its own thread and use dsp thread for just streaming
 func RunDSP(dspConf DspConf, voices []*generator.Voice) {
 
 	portaudio.Initialize()
@@ -28,10 +29,13 @@ func RunDSP(dspConf DspConf, voices []*generator.Voice) {
 	defer portaudio.Terminate()
 	out := make([]float32, dspConf.BufferSize)
 	device, err := portaudio.DefaultOutputDevice()
+	// outTemp := make([]float32, dspConf.BufferSize*4)
 	deviceO := portaudio.StreamDeviceParameters{Device: device, Channels: 1, Latency: time.Duration(000000000)}
-	// deviceI := portaudio.StreamDeviceParameters{Device: device, Channels: 0, Latency: time.Duration(1000000000)}
+	//  deviceI := portaudio.StreamDeviceParameters{Device: device, Channels: 0, Latency: time.Duration(1000000000)}
+	// highL := portaudio.LowLatencyParameters(nil, device)
 	params := portaudio.StreamParameters{Output: deviceO, SampleRate: 48000, FramesPerBuffer: dspConf.BufferSize, Flags: portaudio.ClipOff}
 
+	// stream, err := portaudio.OpenStream(highL, &out)
 	stream, err := portaudio.OpenStream(params, &out)
 
 	//  stream, err := portaudio.OpenDefaultStream(0, 1, 48000, len(out), &out)
@@ -52,6 +56,7 @@ func RunDSP(dspConf DspConf, voices []*generator.Voice) {
 		Mixing(out, dspConf, voices)
 		// Mixing(out, dspConf, voices)
 		// write to the stream
+
 		if err := stream.Write(); err != nil {
 			log.Printf("error writing to stream : %v\n", err)
 		}
@@ -95,5 +100,7 @@ func Mixing(dst []float32, src DspConf, voices []*generator.Voice) {
 		// dst[i] = out[i]
 
 	}
+
+	// dst[1]=dst[len(dst)-2]
 
 }

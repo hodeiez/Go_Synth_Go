@@ -16,6 +16,7 @@ func PreMix(output []float64, buffered []*generator.Tone, voice *generator.Voice
 			}
 			temp += buffered[i].Osc.Buf.Data[n]
 		}
+
 		output[n] = temp
 
 	}
