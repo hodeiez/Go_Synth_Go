@@ -84,7 +84,7 @@ func Lowpass5(input []float64, freq float64, delay float32, sr float64, resoVal 
 	resonance := ((resoVal-0)*(4-0)/1000 + 0)
 	var buf0, buf1, buf2, buf3, in1, in2, in3, in4 float64
 	buf0, buf1, buf2, buf3, in1, in2, in3, in4 = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-	output := make([]float64, len(input)) //EZ AHAZTU
+	output := make([]float64, len(input))
 	// feedbackAmount := resonance * (1 - (0.15 * cutoff * 1.15 * cutoff * 1.15)) //resonance/(1.0-cutoff)
 	// feedbackAmount := resonance + resonance/(1.0-cutoff)
 

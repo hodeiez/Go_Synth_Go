@@ -12,9 +12,13 @@ import (
 func main() {
 	///main vars
 	msg := make(chan midi.MidiMsg)
+	out := 0.0
+	dspConfig := dsp.DspConf{BufferSize: config.BufferSize}
+	p := dsp.NewProcessAudio(&out, config.Voices, dspConfig)
 	go midi.RunMidi(msg)
-	go dsp.RunDSP(dsp.DspConf{BufferSize: config.BufferSize}, config.Voices)
 	go RunSynth(config.Voices, msg)
+
+	go dsp.RunDSP(p, dspConfig)
 	gui.RunGUI(organism.SynthValues{Osc1: &config.OscPanel1, Osc2: &config.OscPanel2})
 
 }
