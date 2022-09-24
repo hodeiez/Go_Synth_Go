@@ -12,9 +12,8 @@ import (
 )
 
 type MidiMsg struct {
-	Key int  //
-	On  bool //
-	// Off    bool //TODO:REMOVE THIS
+	Key    int  //
+	On     bool //
 	Vel    int64
 	Cha    int64
 	Ctl    int64

@@ -1,8 +1,6 @@
 package dsp
 
 import (
-	"time"
-
 	"log"
 
 	"github.com/gordonklaus/portaudio"
@@ -22,14 +20,17 @@ func RunDSP(p *ProcessAudio, dspConf DspConf) {
 	defer portaudio.Terminate()
 
 	device, err := portaudio.DefaultOutputDevice()
-
+	if err != nil {
+		log.Fatal(err)
+	}
+	println(device.Name)
 	output := make([]float32, dspConf.BufferSize)
-	deviceO := portaudio.StreamDeviceParameters{Device: device, Channels: 1, Latency: time.Duration(0)}
 
-	params := portaudio.StreamParameters{Output: deviceO, SampleRate: 48000, FramesPerBuffer: dspConf.BufferSize, Flags: portaudio.ClipOff}
+	deviceO := portaudio.StreamDeviceParameters{Device: device, Channels: 1, Latency: device.DefaultHighOutputLatency}
+
+	params := portaudio.StreamParameters{Output: deviceO, SampleRate: device.DefaultSampleRate, FramesPerBuffer: dspConf.BufferSize, Flags: portaudio.ClipOff}
 
 	p.Stream, err = portaudio.OpenStream(params, &output)
-	// p.Stream = stream
 	if err != nil {
 		log.Fatal(err)
 	}

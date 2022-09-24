@@ -22,6 +22,7 @@ func main() {
 	gui.RunGUI(organism.SynthValues{Osc1: &config.OscPanel1, Osc2: &config.OscPanel2})
 
 }
+
 func RunSynth(voices []*generator.Voice, msg chan midi.MidiMsg) {
 	pitcChan := make(chan float64)
 	for {
