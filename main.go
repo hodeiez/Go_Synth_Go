@@ -25,6 +25,7 @@ func main() {
 
 func RunSynth(voices []*generator.Voice, msg chan midi.MidiMsg) {
 	pitcChan := make(chan float64)
+	// pitcChan2 := make(chan float64)
 	for {
 
 		for _, v := range voices {
@@ -37,6 +38,15 @@ func RunSynth(voices []*generator.Voice, msg chan midi.MidiMsg) {
 
 					generator.SelectWave(v.ControlValues.Selector.SelectedIndex, t.Osc)
 					*v.Lfo.Rate = *v.ControlValues.LfoR
+					// println(v.Lfo.Main.Osc.Sample())
+
+					// if *v.Lfo.Rate > 0 {
+					// 	// go t.SendPitch(pitcChan2)
+					// 	*v.ControlValues.Pitch = generator.RescaleThis(v.Lfo.Main.Osc.Sample())
+					// 	// t.Osc.SetBaseFreq(generator.RescaleThis(v.Lfo.Main.Osc.Sample()))
+					// 	// pitcChan2 <- generator.RescaleThis(v.Lfo.Main.Osc.Sample())
+					// 	// t.Osc.SetBaseFreq(generator.RescaleThis(v.Lfo.Main.Osc.Sample()))
+					// }
 
 				}
 

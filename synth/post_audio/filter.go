@@ -15,6 +15,24 @@ const (
 	WTF
 )
 
+// func normalize(xs []float64) []float64 {
+// 	length := len(xs)
+// 	maxamp := 0.0
+// 	for i := 0; i < length; i++ {
+// 		amp := math.Abs(xs[i])
+// 		if amp > maxamp {
+// 			maxamp = amp
+// 		}
+// 	}
+
+// 	maxamp = 1.0 * maxamp
+// 	for i := 0; i < length; i++ {
+// 		xs[i] *= maxamp
+// 	}
+// 	xs[len(xs)-1] = xs[0]
+// 	return xs
+// }
+
 func (filter Filter) RunFilter(input []float64, delay float32, sr float64, fs int) []float64 {
 
 	return Lowpass5(input, *filter.Cutoff, delay, sr, *filter.Reso, fs, LP)

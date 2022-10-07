@@ -59,7 +59,7 @@ func oscPanel(title string, ypos int, val *OscPanelValues) *g.ChildWidget {
 		components.Knob(image.Pt(g.GetCursorPos().X+410, g.GetCursorPos().Y+ypos), val.Res, "RES").SetMinMax(0, 1000),
 		components.Knob(image.Pt(g.GetCursorPos().X+200, g.GetCursorPos().Y+100+ypos), val.Pwm, "PWM"),
 
-		components.Knob(image.Pt(g.GetCursorPos().X+270, g.GetCursorPos().Y+100+ypos), val.LfoR, "LFO-R"),
+		components.Knob(image.Pt(g.GetCursorPos().X+270, g.GetCursorPos().Y+100+ypos), val.LfoR, "LFO-R").SetMinMax(0, 20),
 		components.Knob(image.Pt(g.GetCursorPos().X+340, g.GetCursorPos().Y+100+ypos), val.LfoW, "LFO-W"),
 		components.Knob(image.Pt(g.GetCursorPos().X+410, g.GetCursorPos().Y+100+ypos), val.Noize, "NOIZE"),
 	)

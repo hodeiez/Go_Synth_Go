@@ -67,7 +67,11 @@ func testSelector() []string {
 }
 
 const (
-	BufferSize = 2048 //
+	SampleRate   = 48000
+	DelaySeconds = 0.2
+)
+const (
+	BufferSize = SampleRate * DelaySeconds //
 	polyphony  = 40
 )
 
@@ -97,7 +101,7 @@ var voice2 = generator.NewVoice(&post_audio.Filter{Cutoff: OscPanel2.Cut, Reso: 
 		MinValue:    0.0,
 		MaxValue:    0.0,
 		StopTime:    make(chan bool, 1)},
-	generator.NewLFO(BufferSize, OscPanel1.LfoR),
+	generator.NewLFO(BufferSize, OscPanel2.LfoR),
 	// &generator.Lfo{},
 	OscPanel2,
 	polyphony,
