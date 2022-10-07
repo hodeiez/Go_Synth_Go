@@ -8,7 +8,7 @@ import (
 
 var (
 	sizeX = 1000
-	sizeY = 600
+	sizeY = 650
 )
 
 func panelWindow() *g.WindowWidget {

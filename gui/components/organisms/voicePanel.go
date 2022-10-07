@@ -33,6 +33,9 @@ type OscPanelValues struct {
 	Selector  *SelectorValues
 }
 
+var sr int32
+var dl int32
+
 type SynthValues struct {
 	Osc1 *OscPanelValues
 	Osc2 *OscPanelValues
@@ -40,12 +43,15 @@ type SynthValues struct {
 
 //TODO: abstract and make dynamic
 func VoicePanel(val *SynthValues) *g.ColumnWidget {
-
-	return g.Column(panelStyled(oscPanel("OSC1", 0, val.Osc1), styles.Silver), panelStyled(oscPanel("OSC2", 220, val.Osc2), styles.Goldish))
+	sr = 48000
+	dl = 1
+	return g.Column(panelStyled(oscPanel("OSC1", 0, val.Osc1), styles.Silver), panelStyled(oscPanel("OSC2", 220, val.Osc2), styles.Goldish), g.Row(configPanelInit(&sr, &dl)))
 }
 func oscPanel(title string, ypos int, val *OscPanelValues) *g.ChildWidget {
+
 	return oscPanelStyled().Layout(
 		titleStyled(title),
+
 		g.Row(g.Column(
 			g.Dummy(400, 70),
 			components.Selector(val.Selector.TextValues, &val.Selector.SelectedIndex).Build()), g.Dummy(50, 10),
