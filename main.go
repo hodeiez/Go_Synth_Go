@@ -16,10 +16,10 @@ func main() {
 	dspConfig := dsp.DspConf{BufferSize: config.BufferSize}
 	p := dsp.NewProcessAudio(&out, config.Voices, dspConfig)
 	go midi.RunMidi(msg)
-	go RunSynth(config.Voices, msg)
 
 	go dsp.RunDSP(p, dspConfig)
-	gui.RunGUI(organism.SynthValues{Osc1: &config.OscPanel1, Osc2: &config.OscPanel2})
+	go gui.RunGUI(organism.SynthValues{Osc1: &config.OscPanel1, Osc2: &config.OscPanel2})
+	RunSynth(config.Voices, msg)
 
 }
 

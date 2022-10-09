@@ -80,7 +80,7 @@ func ToMidiMsg(message string) MidiMsg {
 	var isOn bool
 	var velocity, theKey, ctl, ctlVal, pitch int64 = 0, 0, 0, 0, 0
 
-	println(message)
+	// println(message)
 	channel, _ := strconv.ParseInt(strings.Fields(message)[2], 10, 64)
 
 	switch true {

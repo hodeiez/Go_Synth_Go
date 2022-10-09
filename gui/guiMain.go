@@ -8,13 +8,24 @@ import (
 
 var (
 	sizeX = 1000
-	sizeY = 650
+	sizeY = 540
 )
 
+var wnd *g.MasterWindow
+
 func panelWindow() *g.WindowWidget {
-	wnd := g.Window("SynthPanel").Flags(g.WindowFlagsNoBackground | g.WindowFlagsNoCollapse | g.WindowFlagsNoTitleBar | g.WindowFlagsNoResize | g.WindowFlagsNoMove)
-	wnd.Size(float32(sizeX), float32(sizeY))
+	wnd := g.Window("SynthPanel").Flags(g.WindowFlagsNoBackground | g.WindowFlagsNoCollapse | g.WindowFlagsNoTitleBar | g.WindowFlagsNoMove | g.WindowFlagsAlwaysAutoResize)
+	// wnd.Size(float32(sizeX), float32(sizeY))
 	return wnd
+}
+func resizeMe() {
+	scale := g.Context.GetPlatform().GetContentScale()
+
+	if scale > 1 {
+		wnd.SetSize(int(float32(sizeX)/scale)+sizeX-int(float32(sizeX)/scale), int(float32(sizeY)/scale)+sizeY-int(float32(sizeY)/scale))
+	} else {
+		wnd.SetSize(int(float32(sizeX)/scale), int(float32(sizeY)/scale))
+	}
 }
 
 func loop() {
@@ -24,13 +35,18 @@ func loop() {
 		organism.VoicePanel(&synthValues),
 	)
 
+	resizeMe()
+
 }
 
 var synthValues = organism.SynthValues{}
 
 func RunGUI(val interface{}) {
-	wnd := g.NewMasterWindow("GO SYNTH GO", sizeX-199, sizeY-225, g.MasterWindowFlagsTransparent)
+	wnd = g.NewMasterWindow("GO SYNTH GO", sizeX, sizeY, g.MasterWindowFlagsNotResizable)
+
+	// wnd := g.NewMasterWindow("GO SYNTH GO", sizeX+adjustX, sizeY+adjustY, g.MasterWindowFlagsTransparent|g.MasterWindowFlagsNotResizable)
 	synthValues = val.(organism.SynthValues)
 	wnd.Run(loop)
+
 	defer wnd.Close()
 }

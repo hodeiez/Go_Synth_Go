@@ -67,8 +67,8 @@ func testSelector() []string {
 }
 
 const (
-	SampleRate   = 44100
-	DelaySeconds = 0.5
+	SampleRate   = 48000
+	DelaySeconds = 0.1
 )
 const (
 	BufferSize = SampleRate * DelaySeconds //
