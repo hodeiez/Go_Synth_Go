@@ -7,7 +7,6 @@ import (
 
 func SlideH(start *int32, min *int32, max *int32) *g.SliderIntWidget {
 	slider := g.SliderInt(start, *min, *max)
-
 	return slider
 
 }

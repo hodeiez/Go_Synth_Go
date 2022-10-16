@@ -12,7 +12,7 @@ type Configpanel struct {
 }
 
 var (
-	mins = int32(0.0) //TODO:check in generator.Adsr this value to be 0
+	mins = int32(0.0)
 	maxs = int32(100.0)
 )
 

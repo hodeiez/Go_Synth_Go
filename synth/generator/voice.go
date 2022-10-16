@@ -32,7 +32,30 @@ func NewVoice(filter *post_audio.Filter, adsr *Adsr, lfo *Lfo, controlValues org
 
 }
 
-func (vo *Voice) RunPolly(message midi.MidiMsg) {
+func (vo *Voice) RunPolly(message midi.MidiMsg, pitcChan chan float64) {
+
+	for _, t := range vo.Tones {
+
+		if t.Type == Regular {
+			go t.SendPitch(pitcChan)
+			pitcChan <- *vo.ControlValues.Pitch
+			t.Osc.SetBaseFreq(*vo.ControlValues.Pitch)
+
+			SelectWave(vo.ControlValues.Selector.SelectedIndex, t.Osc)
+			*vo.Lfo.Rate = *vo.ControlValues.LfoR
+			// println(v.Lfo.Main.Osc.Sample())
+
+			// if *v.Lfo.Rate > 0 {
+			// 	// go t.SendPitch(pitcChan2)
+			// 	*v.ControlValues.Pitch = generator.RescaleThis(v.Lfo.Main.Osc.Sample())
+			// 	// t.Osc.SetBaseFreq(generator.RescaleThis(v.Lfo.Main.Osc.Sample()))
+			// 	// pitcChan2 <- generator.RescaleThis(v.Lfo.Main.Osc.Sample())
+			// 	// t.Osc.SetBaseFreq(generator.RescaleThis(v.Lfo.Main.Osc.Sample()))
+			// }
+
+		}
+
+	}
 
 	oscKey := findWithKey(vo.Tones, message.Key, Regular)
 	noizeKey := findWithKey(vo.Tones, message.Key, Noize)

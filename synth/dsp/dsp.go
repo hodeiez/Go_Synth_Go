@@ -28,7 +28,7 @@ func RunDSP(p *ProcessAudio, dspConf DspConf) {
 
 	deviceO := portaudio.StreamDeviceParameters{Device: device, Channels: 1, Latency: device.DefaultHighOutputLatency}
 
-	params := portaudio.StreamParameters{Output: deviceO, SampleRate: device.DefaultSampleRate, FramesPerBuffer: portaudio.FramesPerBufferUnspecified, Flags: portaudio.ClipOff}
+	params := portaudio.StreamParameters{Output: deviceO, SampleRate: device.DefaultSampleRate, FramesPerBuffer: dspConf.BufferSize, Flags: portaudio.ClipOff}
 
 	p.Stream, err = portaudio.OpenStream(params, &output)
 	if err != nil {

@@ -19,45 +19,18 @@ func main() {
 
 	go dsp.RunDSP(p, dspConfig)
 	go gui.RunGUI(organism.SynthValues{Osc1: &config.OscPanel1, Osc2: &config.OscPanel2})
-	RunSynth(config.Voices, msg)
+	pitcChan := make(chan float64)
+	RunSynth(config.Voices, msg, pitcChan)
 
 }
 
-func RunSynth(voices []*generator.Voice, msg chan midi.MidiMsg) {
-	pitcChan := make(chan float64)
-	// pitcChan2 := make(chan float64)
+func RunSynth(voices []*generator.Voice, msg chan midi.MidiMsg, pitcChan chan float64) {
 	for {
-
-		for _, v := range voices {
-			for _, t := range v.Tones {
-
-				if t.Type == generator.Regular {
-					go t.SendPitch(pitcChan)
-					pitcChan <- *v.ControlValues.Pitch
-					t.Osc.SetBaseFreq(*v.ControlValues.Pitch)
-
-					generator.SelectWave(v.ControlValues.Selector.SelectedIndex, t.Osc)
-					*v.Lfo.Rate = *v.ControlValues.LfoR
-					// println(v.Lfo.Main.Osc.Sample())
-
-					// if *v.Lfo.Rate > 0 {
-					// 	// go t.SendPitch(pitcChan2)
-					// 	*v.ControlValues.Pitch = generator.RescaleThis(v.Lfo.Main.Osc.Sample())
-					// 	// t.Osc.SetBaseFreq(generator.RescaleThis(v.Lfo.Main.Osc.Sample()))
-					// 	// pitcChan2 <- generator.RescaleThis(v.Lfo.Main.Osc.Sample())
-					// 	// t.Osc.SetBaseFreq(generator.RescaleThis(v.Lfo.Main.Osc.Sample()))
-					// }
-
-				}
-
-			}
-
-		}
 
 		select {
 		case msg := <-msg:
-			config.Voices[0].RunPolly(msg)
-			config.Voices[1].RunPolly(msg)
+			config.Voices[0].RunPolly(msg, pitcChan)
+			config.Voices[1].RunPolly(msg, pitcChan)
 
 		default:
 

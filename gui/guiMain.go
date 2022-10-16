@@ -15,7 +15,7 @@ var wnd *g.MasterWindow
 
 func panelWindow() *g.WindowWidget {
 	wnd := g.Window("SynthPanel").Flags(g.WindowFlagsNoBackground | g.WindowFlagsNoCollapse | g.WindowFlagsNoTitleBar | g.WindowFlagsNoMove | g.WindowFlagsAlwaysAutoResize)
-	// wnd.Size(float32(sizeX), float32(sizeY))
+
 	return wnd
 }
 func resizeMe() {
@@ -43,8 +43,6 @@ var synthValues = organism.SynthValues{}
 
 func RunGUI(val interface{}) {
 	wnd = g.NewMasterWindow("GO SYNTH GO", sizeX, sizeY, g.MasterWindowFlagsNotResizable)
-
-	// wnd := g.NewMasterWindow("GO SYNTH GO", sizeX+adjustX, sizeY+adjustY, g.MasterWindowFlagsTransparent|g.MasterWindowFlagsNotResizable)
 	synthValues = val.(organism.SynthValues)
 	wnd.Run(loop)
 
